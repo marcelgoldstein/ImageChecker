@@ -31,7 +31,7 @@ namespace ImageChecker.ViewModel
             {
                 SetProperty(ref errorFiles, value);
             }
-        } 
+        }
         #endregion
 
 
@@ -39,9 +39,9 @@ namespace ImageChecker.ViewModel
         public VMErrorFiles(IEnumerable<string> files)
         {
             foreach (string file in files)
-	        {
-		        ErrorFiles.Add(new FileInfo(file));
-	        }
+            {
+                ErrorFiles.Add(new FileInfo(file));
+            }
         }
         #endregion
 
@@ -145,7 +145,7 @@ namespace ImageChecker.ViewModel
 
             if (fi != null)
             {
-                Process.Start(fi.FullName);
+                Process.Start(new ProcessStartInfo(fi.FullName) { UseShellExecute = true });
             }
         }
 
@@ -223,7 +223,7 @@ namespace ImageChecker.ViewModel
         public void Dispose()
         {
 
-        } 
+        }
         #endregion
     }
 }

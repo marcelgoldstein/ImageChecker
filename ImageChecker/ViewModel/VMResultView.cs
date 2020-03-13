@@ -588,7 +588,7 @@ namespace ImageChecker.ViewModel
                 {
                     if (fileImage.File is FileInfo fi)
                     {
-                        Process.Start(fi.FullName);
+                        Process.Start(new ProcessStartInfo(fi.FullName) { UseShellExecute = true });
                     }
                 }
             }
