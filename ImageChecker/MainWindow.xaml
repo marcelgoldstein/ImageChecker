@@ -1,0 +1,13 @@
+﻿<Window  x:Class="ImageChecker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:vm="clr-namespace:ImageChecker.ViewModel"
+        xmlns:v="clr-namespace:ImageChecker.View"
+        xmlns:behavior="clr-namespace:ImageChecker.Behavior"
+        Title="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Content.WindowTitle, FallbackValue='Window'}" 
+        Icon="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Content.WindowIcon}" 
+        TaskbarItemInfo="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Content.WindowTaskbarInfo}"
+        behavior:WindowSizeBehavior.WindowSizeActivated="True" >
+    
+</Window>

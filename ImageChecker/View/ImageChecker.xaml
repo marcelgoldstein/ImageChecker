@@ -1,0 +1,192 @@
+﻿<UserControl
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:switch="clr-namespace:ImageChecker.Switch"
+        xmlns:behavior="clr-namespace:ImageChecker.Behavior"
+        xmlns:converter="clr-namespace:ImageChecker.Converter"
+        mc:Ignorable="d" 
+        x:Class="ImageChecker.View.ImageCheckerView"
+        Height="Auto" Width="Auto" MinHeight="320" MinWidth="600" d:DesignWidth="600" d:DesignHeight="320" 
+        AllowDrop="True" behavior:DropBehavior.PreviewDropCommand="{Binding DropFolderCommand}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="57" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Folders" Grid.Column="0"/>
+                    <Button ToolTip="Add Directory" Command="{Binding OpenFolderAddDialogCommand}" Grid.Column="2" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
+                        <Image Source="/ImageChecker;component/Icon/add_folder.png" Stretch="Uniform" />
+                    </Button>
+                    <Button ToolTip="Remove Directory" Grid.Column="3" Command="{Binding RemoveFolderCommand}" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
+                        <Image Source="/ImageChecker;component/Icon/remove_folder.png" Stretch="Uniform" />
+                    </Button>
+                    <Button ToolTip="Clear Directories" Grid.Column="4" Command="{Binding ClearFoldersCommand}" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
+                        <Image Source="/ImageChecker;component/Icon/clear_folders.png" Stretch="Uniform" />
+                    </Button>
+                    <CheckBox Content="include subdirectories" Grid.Column="5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding IncludeSubdirectories, Mode=TwoWay}"/>
+                </Grid>
+            </GroupBox.Header>
+            <ListBox x:Name="lbDirectories" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0"
+				ItemsSource="{Binding Folders}" DisplayMemberPath="FullName"
+                SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"/>
+        </GroupBox>
+
+        <GroupBox Header="Rename Files" Margin="5,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="filenames shorter than" Margin="5" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider Grid.Column="0" VerticalAlignment="Center" Minimum="1" Maximum="100" AutoToolTipPlacement="TopLeft" Value="{Binding WorkerRenameFiles.FileNameLength, Mode=TwoWay}" Margin="5" SmallChange="1" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch"/>
+                    <CheckBox Grid.Column="1" Content="all" ToolTip="ignores the given length" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.RenameAll, Mode=TwoWay}" HorizontalAlignment="Right"/>
+                </Grid>
+                
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <CheckBox Content="keep original names" ToolTip="appends or replaces filenames" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.KeepOriginalNames, Mode=TwoWay}"/>
+                    <CheckBox Content="loop" ToolTip="starts over and over again" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.Loop, Mode=TwoWay}"/>
+                    <CheckBox Content="endless" ToolTip="starts over and over again (even if no files processing)" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.LoopEndless, Mode=TwoWay}"/>
+                    
+                </StackPanel>
+
+                <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Resources>
+                        <switch:SwitchConverter x:Key="PauseRenameText" >
+                            <switch:SwitchConverterCase When="False" Then="Pause" />
+                            <switch:SwitchConverterCase When="True" Then="Unpause" />
+                        </switch:SwitchConverter>
+                    </Grid.Resources>
+                    <Button Content="Start" Margin="5" Command="{Binding StartRenameCommand}"/>
+                    <Button Content="{Binding WorkerRenameFiles.IsRenamingFilesPaused, Converter={StaticResource PauseRenameText}, FallbackValue='Pause'}" Margin="5" Grid.Column="1" 
+                            Command="{Binding PauseRenameCommand}" CommandParameter="{Binding WorkerRenameFiles.IsRenamingFilesPaused}"/>
+                    <Button Content="Cancel" Margin="5" Grid.Column="2" Command="{Binding CancelRenameCommand}"/>
+
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Compare Images"  Margin="5,0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.Resources>
+                        <switch:SwitchConverter x:Key="PauseImageComparisonText" >
+                            <switch:SwitchConverterCase When="False" Then="Pause" />
+                            <switch:SwitchConverterCase When="True" Then="Unpause" />
+                        </switch:SwitchConverter>
+                        
+                        <switch:SwitchConverter x:Key="ShowErrorFilesVisibility">
+                            <switch:SwitchConverterCase When="False" Then="Collapsed" />
+                            <switch:SwitchConverterCase When="True" Then="Visible" />
+                        </switch:SwitchConverter>
+                    </Grid.Resources>
+                    
+                    <Button Content="Start" Margin="5" Grid.Column="0" Command="{Binding StartImageComparisonCommand}"/>
+                    <Button Content="{Binding WorkerImageComparison.IsComparingImagesPaused, Converter={StaticResource PauseImageComparisonText}, FallbackValue='Pause'}" Margin="5" Grid.Column="1" 
+                            Command="{Binding PauseImageComparisonCommand}" CommandParameter="{Binding WorkerImageComparison.IsComparingImagesPaused}"/>
+                    <Button Content="Cancel" Margin="5" Grid.Column="2" Command="{Binding CancelImageComparisonCommand}"/>
+                    
+                    <Button Grid.Column="3" Margin="5" ToolTip="handle files that could not be processed as image" 
+                            Command="{Binding ShowErrorFilesCommand}"
+                            Visibility="{Binding WorkerImageComparison.HasErrorFiles, Converter={StaticResource ShowErrorFilesVisibility}}">
+                        <Image Source="/ImageChecker;component/Icon/error.png" Height="16" Width="16"/>
+                    </Button>
+
+                    
+                    
+                </Grid>
+
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+                    <Grid.Resources>
+                        <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="prescale option" VerticalAlignment="Center" Grid.Column="0" Margin="5,0,5,5"/>
+                    <ComboBox Grid.Column="1" Margin="5" Width="100" IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"
+                              ItemsSource="{Binding PreScaleOptions}" DisplayMemberPath="Item2" SelectedValuePath="Item1"
+                              SelectedItem="{Binding SelectedPreScaleOption, Mode=TwoWay}"/>
+                    
+                    <TextBlock Text="similarity threshold" Grid.Column="3" VerticalAlignment="Center" Margin="5,0,5,5"/>
+                    <Slider Grid.Column="4" VerticalAlignment="Center" Minimum="0" Maximum="100" AutoToolTipPlacement="TopLeft" Value="{Binding Threshold, Mode=TwoWay}" 
+                            Margin="5" SmallChange="1" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch"
+                            />
+                            <!--IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"-->
+                    <!--<CheckBox Content="pre-resize images" Margin="5,0,5,5" IsChecked="{Binding PreResizeImages, Mode=TwoWay}" IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"/>-->    
+                </Grid>
+                
+
+                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Button Margin="5,0,5,5" ToolTip="opens a new window presenting the results" 
+                            Command="{Binding ShowResultsCommand}" Content="{Binding WorkerImageComparison.SelectedPossibleDuplicatesCountMessage, FallbackValue='show results'}" />
+                </Grid>
+                
+
+            </Grid>
+        </GroupBox>
+
+        <ProgressBar Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Height="20" 
+                     Minimum="{Binding ProgressMinimum}" Maximum="{Binding ProgressMaximum}" Value="{Binding ProgressValue}"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Text="{Binding ProgressText, FallbackValue='0 / X'}"/>
+    </Grid>
+</UserControl>

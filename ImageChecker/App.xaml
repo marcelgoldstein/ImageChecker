@@ -1,0 +1,27 @@
+﻿<Application x:Class="ImageChecker.App"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:v="clr-namespace:ImageChecker.View"
+                xmlns:vm="clr-namespace:ImageChecker.ViewModel" 
+                >
+    <Application.Resources>
+        <ResourceDictionary>
+            <Style TargetType="{x:Type Window}">
+                   <Setter Property="Title" Value="DefaultWindowTitle" />
+            </Style>
+            
+            
+            <DataTemplate DataType="{x:Type vm:VMImageChecker}">
+                <v:ImageCheckerView />
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:VMErrorFiles}">
+                <v:ErrorFiles />
+            </DataTemplate>
+            
+            <DataTemplate DataType="{x:Type vm:VMResultView}">
+                <v:ResultView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

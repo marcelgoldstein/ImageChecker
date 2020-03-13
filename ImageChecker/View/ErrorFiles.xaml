@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="ImageChecker.View.ErrorFiles"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             MinHeight="200" MinWidth="500" Height="Auto" Width="Auto"
+             d:DesignHeight="200" d:DesignWidth="50">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <AlternationConverter x:Key="BackgroundConverter">
+                <SolidColorBrush>White</SolidColorBrush>
+                <SolidColorBrush>LightGray</SolidColorBrush>
+            </AlternationConverter>
+
+            <Style x:Key="alternatingWithBinding" TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Background" 
+              Value="{Binding RelativeSource={RelativeSource Self},
+                     Path=(ItemsControl.AlternationIndex),
+                     Converter={StaticResource BackgroundConverter}}"/>
+
+            </Style>
+
+        </Grid.Resources>
+
+        <Grid Grid.Row="0" Margin="5" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Height="28" Width="80" Command="{Binding DeleteAllFilesCommand}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Image Source="/ImageChecker;component/Icon/files.png" />
+                    <Image Source="/ImageChecker;component/Icon/arrow_right.png" />
+                    <Image Source="/ImageChecker;component/Icon/trash.png" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Height="28" Width="80" Command="{Binding CutAllFilesCommand}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Image Source="/ImageChecker;component/Icon/cut.png" />
+                    <Image Source="/ImageChecker;component/Icon/arrow_right.png" />
+                    <Image Source="/ImageChecker;component/Icon/clipboard.png" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <ListBox Margin="5,0,5,5" Grid.Row="1" ItemsSource="{Binding ErrorFiles}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" 
+                 AlternationCount="2" ItemContainerStyle="{StaticResource alternatingWithBinding}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.OpenImageCommand}" CommandParameter="{Binding }" />
+                        </Grid.InputBindings>
+                        
+
+                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock.ToolTip>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FullName}" />
+                                    <TextBlock Text="{Binding Length, StringFormat={}filesize: {0} Bytes}" />
+                                </StackPanel>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        
+                        
+
+                        <Button ToolTip="open containing folder" Grid.Column="1" Width="22" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,5,0" 
+                                Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding }" >
+                            <Image Source="/ImageChecker;component/Icon/openFolder.png" />
+                        </Button>
+                        <Button ToolTip="delete file" Grid.Column="2" Width="22" Grid.Row="0" Grid.RowSpan="2" 
+                                Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding }" >
+                            <Image Source="/ImageChecker;component/Icon/trash.png" />
+                        </Button>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

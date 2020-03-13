@@ -1,0 +1,422 @@
+﻿<UserControl x:Class="ImageChecker.View.ResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:behaviors="clr-namespace:ImageChecker.Behavior"
+             xmlns:switch="clr-namespace:ImageChecker.Switch"
+             xmlns:controls="clr-namespace:ImageChecker.Controls"
+             xmlns:dataclasses="clr-namespace:ImageChecker.DataClass"
+             xmlns:converter="clr-namespace:ImageChecker.Converter"
+             mc:Ignorable="d" 
+             MinWidth="400" MinHeight="300"
+             d:DesignHeight="374" d:DesignWidth="691"
+             Focusable="True" behaviors:InputBindingsBehavior.TakesInputBindingPrecedence="True">
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA.File}" Key="Left" />
+        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB.File}" Key="Right" />
+    </UserControl.InputBindings>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*" MinHeight="100" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <Style x:Key="EmptyButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="#00000000"/>
+                <Setter Property="BorderBrush" Value="#00000000"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="1"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <ContentPresenter 
+                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                    Margin="{TemplateBinding Padding}" 
+                    RecognizesAccessKey="True" 
+                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <BitmapImage x:Key="DefaultImage" UriSource="/ImageChecker;component/Images/noImage.jpg" />
+            <converter:NullReplaceImageConverter x:Key="NullReplaceImageConverter" />
+
+            <SolidColorBrush x:Key="DeleteFileBackground" Color="#FFFF4848"/>
+            <SolidColorBrush x:Key="ExterminationModeBackground" Color="#FFA40000"/>
+            
+            
+        </Grid.Resources>
+
+        <Grid Grid.Row="0" Visibility="{Binding FilterActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBlock Text="filename" Grid.Column="0" Margin="5,5,5,0" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" Margin="5,5,5,0" Text="{Binding FileFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                <TextBox.InputBindings>
+                    <KeyBinding Command="{Binding ApplyFiltersCommand}" Key="Return" />
+                    <KeyBinding Command="{Binding ApplyFiltersCommand}" Key="Enter" />
+                </TextBox.InputBindings>
+            </TextBox>
+            
+            <TextBlock Text="status" Grid.Column="3" Margin="5,5,5,0" VerticalAlignment="Center"/>
+            <ComboBox Grid.Column="4" Margin="5,5,5,0" MinWidth="120"
+                      ItemsSource="{Binding StatusFilters}" DisplayMemberPath="Text" SelectedValuePath="ID" SelectedItem="{Binding SelectedStatusFilter}" 
+                      behaviors:ComboboxSelectionChangedBehavior.Command="{Binding ApplyFiltersCommand}"/>
+            
+        </Grid>
+        
+        <Grid Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="{Binding ProcessedFilesCount, StringFormat='{}processed files = {0}', FallbackValue='processed files = 0'}" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock Grid.Column="2" Text="{Binding FoundDuplicatesCount, StringFormat='{}found duplicates = {0}', FallbackValue='found duplicates = 0'}" VerticalAlignment="Center" Margin="5"/>
+            <TextBlock Grid.Column="4" Text="{Binding UnsolvedDuplicatesCount, StringFormat='{}unsolved = {0}', FallbackValue='unsolved = 0'}" VerticalAlignment="Center" Margin="5" Foreground="Red"/>
+            <TextBlock Grid.Column="6" Text="{Binding SolvedDuplicatesCount, StringFormat='{}solved = {0}', FallbackValue='solved = 0'}" VerticalAlignment="Center" Margin="5" Foreground="Green"/>
+        </Grid>
+        
+        <controls:MultiSelectDataGrid Grid.Row="2" ItemsSource="{Binding ResultsView.View}" IsSynchronizedWithCurrentItem="True"
+                                        SelectedItem="{Binding SelectedResult, Mode=TwoWay}" 
+                                        Margin="5,5,5,0" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserAddRows="False" 
+                                        ClipToBounds="True" IsReadOnly="True" SelectionMode="Extended" 
+                                        SelectedItemsList="{Binding SelectedResults, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                        behaviors:ScrollIntoViewBehavior.ScrollIntoView="True"
+                                        behaviors:DataGridSyncSelectedCellBehavior.SyncSelectedCell="True">
+            <controls:MultiSelectDataGrid.Resources>
+                <switch:SwitchConverter x:Key="StateIconConverter" Default="/ImageChecker;component/Icon/unsolved.png" >
+                    <switch:SwitchConverterCase When="{x:Static dataclasses:ImageCompareResult+StateEnum.Solved}" Then="/ImageChecker;component/Icon/solved.png"/>
+                </switch:SwitchConverter>
+                <switch:SwitchConverter x:Key="StateTextConverter" Default="unsolved" >
+                    <switch:SwitchConverterCase When="{x:Static dataclasses:ImageCompareResult+StateEnum.Solved}" Then="solved"/>
+                </switch:SwitchConverter>
+            </controls:MultiSelectDataGrid.Resources>
+
+            <controls:MultiSelectDataGrid.ContextMenu>
+                <ContextMenu>
+                    <ContextMenu.Items>
+                        <MenuItem Header="CutSmallerOnes" Height="22"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"
+                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CutSmallerOnesCommand}" >
+                            <MenuItem.Icon>
+                                <Image Source="/ImageChecker;component/Icon/cut.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <MenuItem Header="RestoreImages" Height="22"
+                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItems}"
+                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.RestoreSelectedImagesCommand}" >
+                            <MenuItem.Icon>
+                                <Image Source="/ImageChecker;component/Icon/restore.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <MenuItem Header="Filter" Height="22"
+                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.ActivateFiltersCommand}" >
+                            <MenuItem.Icon>
+                                <Image Source="/ImageChecker;component/Icon/filter.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu.Items>
+                </ContextMenu>
+            </controls:MultiSelectDataGrid.ContextMenu>
+
+
+            <controls:MultiSelectDataGrid.Columns>
+                <DataGridTextColumn Header="Image1" Binding="{Binding FileA.File.Name, Mode=OneWay}" Width="*" MinWidth="150" CanUserSort="False">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip" Value="{Binding FileA.File.FullName, Mode=OneWay}" />
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Image2" Binding="{Binding FileB.File.Name, Mode=OneWay}" Width="*" MinWidth="150" CanUserSort="False">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="ToolTip" Value="{Binding FileB.File.FullName, Mode=OneWay}" />
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="similarity" Binding="{Binding FLANN, StringFormat={}{0:0.00} %}" MinWidth="60"/>
+                
+                <DataGridTemplateColumn Header="" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Stretch="Uniform" Source="{Binding State, Converter={StaticResource StateIconConverter}}" Height="16"
+                                   ToolTip="{Binding State, Converter={StaticResource StateTextConverter}}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </controls:MultiSelectDataGrid.Columns>
+        </controls:MultiSelectDataGrid>
+
+        <GridSplitter Grid.Row="3" Height="10" HorizontalAlignment="Stretch" Margin="5,0">
+            <GridSplitter.Template>
+                <ControlTemplate TargetType="{x:Type GridSplitter}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3">
+                        <Canvas RenderOptions.EdgeMode="Aliased" UseLayoutRounding="True"
+                                Height="6" VerticalAlignment="Center"
+                                Width="50" HorizontalAlignment="Center">
+                            <Line X1="0" X2="50" Y1="0" Y2="0"
+                                  Stroke="White" StrokeThickness="1"/>
+                            <Line X1="0" X2="50" Y1="1" Y2="1"
+                                  Stroke="#A0A0A0" StrokeThickness="1"/>
+                            <Line X1="0" X2="50" Y1="4" Y2="4"
+                                  Stroke="White" StrokeThickness="1"/>
+                            <Line X1="0" X2="50" Y1="5" Y2="5"
+                                  Stroke="#A0A0A0" StrokeThickness="1"/>
+                        </Canvas>
+                    </Border>
+                </ControlTemplate>
+
+            </GridSplitter.Template>
+        </GridSplitter>
+
+        <Grid Grid.Row="4" Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.Resources>
+                <converter:SizeCompareBorderVisibilityConverter x:Key="SizeCompareBorderVisibilityConverter" />
+
+                <switch:SwitchConverter x:Key="ImageBorderBrushA" Default="LightGray">
+                    <switch:SwitchConverterCase When="FileA" Then="Red" />
+                    <switch:SwitchConverterCase When="FileB" Then="Green" />
+                </switch:SwitchConverter>
+
+                <switch:SwitchConverter x:Key="ImageBorderBrushB" Default="LightGray">
+                    <switch:SwitchConverterCase When="FileB" Then="Red" />
+                    <switch:SwitchConverterCase When="FileA" Then="Green" />
+                </switch:SwitchConverter>
+                
+                
+            </Grid.Resources>
+
+            <Grid Grid.Column="0" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" FontWeight="Bold">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Resolution: {0} x {1}" FallbackValue="Resolution:">
+                            <Binding Path="SelectedResult.FileA.BitmapImage.PixelWidth" />
+                            <Binding Path="SelectedResult.FileA.BitmapImage.PixelHeight" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <Button Grid.Row="1" Command="{Binding ImageClickCommand}" CommandParameter="{Binding SelectedResult.FileA}" Style="{StaticResource EmptyButtonStyle}" 
+                        ContextMenuService.ShowOnDisabled="True">
+                    <Grid>
+                        <Border BorderBrush="{Binding SelectedResult.SmallerOne, Converter={StaticResource ImageBorderBrushA}}" BorderThickness="5" Margin="-5">
+                            <Border.Visibility>
+                                <MultiBinding Converter="{StaticResource SizeCompareBorderVisibilityConverter}">
+                                    <Binding Path="IsExterminationModeActive" />
+                                    <Binding Path="SelectedResult.FileA.BitmapImage" />
+                                </MultiBinding>
+                            </Border.Visibility>
+                        </Border>
+                        <Image Source="{Binding SelectedResult.FileA.BitmapImage, FallbackValue={StaticResource DefaultImage}, Converter={StaticResource NullReplaceImageConverter}}" Stretch="Uniform" />
+                    </Grid>
+                    
+
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <ContextMenu.Items>
+                                <MenuItem Header="restore" ToolTip="restore deleted image" ToolTipService.ShowOnDisabled="True" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.RestoreImageCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/restore.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="save as" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SaveAsImageCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/saveAs.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>                                
+                                <MenuItem Header="open in folder" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA.File}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.OpenFolderCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/openFolder.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="cut file to clipboard" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA.File}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CutFileCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/cut.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu.Items>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Column="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="31*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24*"/>
+                    <RowDefinition Height="24*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="9" >
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFA7A8CF" Offset="1"/>
+                            <GradientStop Color="#FF84A6AC" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <TextBlock Text="{Binding SelectedResult.FLANN, StringFormat={}{0:0.00} %, FallbackValue= 100.00 %}" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="ExtraBold" Margin="2" FontSize="20"/>
+
+                <ToggleButton Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Margin="5" Focusable="False"
+                              Background="{DynamicResource ExterminationModeBackground}" FontWeight="Medium" 
+                              IsChecked="{Binding IsExterminationModeActive, Mode=TwoWay}" 
+                              ToolTip="Marks both images, indicating which is the bigger/smaller one">
+                    <ToggleButton.Resources>
+                        <switch:SwitchConverter x:Key="ExterminationModeToTextConverter" Default="OFF">
+                            <switch:SwitchConverterCase When="True" Then="ON" />
+                        </switch:SwitchConverter>
+                    </ToggleButton.Resources>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Extermination Mode" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding IsExterminationModeActive, Converter={StaticResource ExterminationModeToTextConverter}}" HorizontalAlignment="Center" FontWeight="ExtraBlack" FontSize="16"/>
+                    </StackPanel>
+                </ToggleButton>
+                
+                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA.File}" Focusable="False"
+                        Grid.Column="0" Grid.Row="5" Margin="2,2,2,2" 
+                        ToolTip="delete image" Background="{DynamicResource DeleteFileBackground}" >
+                    <Image Source="/ImageChecker;component/Icon/deleteFile.png" Stretch="Uniform" Margin="2"/>
+                </Button>
+                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB.File}" Focusable="False"
+                        Grid.Column="2" Grid.Row="5" Margin="2,2,2,2"
+                        ToolTip="delete image" Background="{DynamicResource DeleteFileBackground}" >
+                    <Image Source="/ImageChecker;component/Icon/deleteFile.png" Stretch="Uniform" Margin="2"/>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Column="2" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" FontWeight="Bold">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Resolution: {0} x {1}" FallbackValue="Resolution:">
+                            <Binding Path="SelectedResult.FileB.BitmapImage.PixelWidth" />
+                            <Binding Path="SelectedResult.FileB.BitmapImage.PixelHeight" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <Button Grid.Row="1" Command="{Binding ImageClickCommand}" CommandParameter="{Binding SelectedResult.FileB}" Style="{StaticResource EmptyButtonStyle}" 
+                        ContextMenuService.ShowOnDisabled="True">
+                    <Grid>
+                        <Border BorderBrush="{Binding SelectedResult.SmallerOne, Converter={StaticResource ImageBorderBrushB}}" BorderThickness="5" Margin="-5">
+                            <Border.Visibility>
+                                <MultiBinding Converter="{StaticResource SizeCompareBorderVisibilityConverter}">
+                                    <Binding Path="IsExterminationModeActive" />
+                                    <Binding Path="SelectedResult.FileB.BitmapImage" />
+                                </MultiBinding>
+                            </Border.Visibility>
+                        </Border>
+                        <Image Source="{Binding SelectedResult.FileB.BitmapImage, FallbackValue={StaticResource DefaultImage}, Converter={StaticResource NullReplaceImageConverter}}" Stretch="Uniform" />
+                    </Grid>
+                    
+
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <ContextMenu.Items>
+                                <MenuItem Header="restore" ToolTip="restore deleted image" ToolTipService.ShowOnDisabled="True" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.RestoreImageCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/restore.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="save as" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SaveAsImageCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/saveAs.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="open in folder" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB.File}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.OpenFolderCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/openFolder.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="cut file to clipboard" Height="22"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB.File}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CutFileCommand}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/ImageChecker;component/Icon/cut.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu.Items>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

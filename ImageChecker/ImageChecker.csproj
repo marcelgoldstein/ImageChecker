@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!--<TargetFramework>net48</TargetFramework>-->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Icon\app.ico</ApplicationIcon>
+    <Version>1.0.4</Version>
+    <PackageProjectUrl>https://github.com/marcelgoldstein/ImageChecker</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marcelgoldstein/ImageChecker</RepositoryUrl>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <!--<PublishTrimmed>true</PublishTrimmed>-->
+    <!--<PublishReadyToRun>true</PublishReadyToRun>-->
+    <!--<PublishSingleFile>true</PublishSingleFile>-->
+    <!--<RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Icon\**\*.png" />
+    <Resource Include="Icon\**\*.jpg" />
+    <Resource Include="Icon\**\*.ico" />
+    <Resource Include="Images\**\*.png" />
+    <Resource Include="Images\**\*.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.2.0.20200208" />
+  </ItemGroup>
+</Project>
