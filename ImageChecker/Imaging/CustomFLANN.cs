@@ -35,38 +35,35 @@ namespace ImageChecker.Imaging
             {
                 try
                 {
-                    using (var fs = File.OpenRead(@"\\?\" + fileName))
+                    using var fs = File.OpenRead(@"\\?\" + fileName);
+
+                    var bmi = new BitmapImage();
+                    bmi.BeginInit();
+                    bmi.StreamSource = fs;
+                    bmi.CacheOption = BitmapCacheOption.OnLoad;
+                    bmi.EndInit();
+                    bmi.Freeze();
+
+                    using var bm = bmi.ToDrawingBitmap();
+
+                    using var origImage = bm.ToMat();
+                    using var scaledImage = new Mat();
+                    using var grayedImage = new Mat();
+
+                    if (preResizeImages)
                     {
-                        var bmi = new BitmapImage();
-                        bmi.BeginInit();
-                        bmi.StreamSource = fs;
-                        bmi.CacheOption = BitmapCacheOption.OnLoad;
-                        bmi.EndInit();
-                        bmi.Freeze();
-
-                        using (var bm = bmi.ToDrawingBitmap())
-                        {
-                            using (var origImage = bm.ToMat())
-                            using (var scaledImage = new Mat())
-                            using (var grayedImage = new Mat())
-                            {
-                                if (preResizeImages)
-                                {
-                                    Cv2.Resize(origImage, scaledImage, new Size(preResizeScale, preResizeScale), 0D, 0D, InterpolationFlags.Cubic);
-                                }
-                                else
-                                {
-                                    origImage.CopyTo(scaledImage);
-                                }
-
-                                Cv2.CvtColor(scaledImage, grayedImage, ColorConversionCodes.BGR2GRAY);
-                                origImage.Dispose();
-                                scaledImage.Dispose();
-
-                                this.surfDetector.DetectAndCompute(grayedImage, null, out _, descriptors);
-                            }
-                        }
+                        Cv2.Resize(origImage, scaledImage, new Size(preResizeScale, preResizeScale), 0D, 0D, InterpolationFlags.Cubic);
                     }
+                    else
+                    {
+                        origImage.CopyTo(scaledImage);
+                    }
+
+                    Cv2.CvtColor(scaledImage, grayedImage, ColorConversionCodes.BGR2GRAY);
+                    origImage.Dispose();
+                    scaledImage.Dispose();
+
+                    this.surfDetector.DetectAndCompute(grayedImage, null, out _, descriptors);
 
                     preLoadedFileImagesSource.Add(new FileImage(fileName, descriptors));
                 }

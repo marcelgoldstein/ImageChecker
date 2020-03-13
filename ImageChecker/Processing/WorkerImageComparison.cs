@@ -1,17 +1,17 @@
 ﻿using ImageChecker.Concurrent;
 using ImageChecker.DataClass;
+using ImageChecker.Helper;
+using ImageChecker.Imaging;
+using ImageChecker.ViewModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageChecker.Imaging;
-using ImageChecker.ViewModel;
-using System.Diagnostics;
-using ImageChecker.Helper;
 
 namespace ImageChecker.Processing
 {
@@ -143,7 +143,7 @@ namespace ImageChecker.Processing
             {
                 if (possibleDuplicates == null)
                     possibleDuplicates = new ConcurrentBag<ImageCompareResult>();
-                
+
                 return possibleDuplicates;
             }
             set
@@ -243,10 +243,10 @@ namespace ImageChecker.Processing
         {
             switch (e.PropertyName)
             {
-                case "ErrorFiles":
+                case nameof(ErrorFiles):
                     HasErrorFiles = ErrorFiles.Any();
                     break;
-                case "PossibleDuplicates":
+                case nameof(PossibleDuplicates):
                     HasPossibleDuplicates = PossibleDuplicates.Any();
                     break;
                 case nameof(this.SelectedPossibleDuplicatesCount):
@@ -266,6 +266,8 @@ namespace ImageChecker.Processing
 
         public async Task Start()
         {
+            PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+
             await ReadFileNameForImageComarisonAsync();
         }
 
@@ -293,7 +295,7 @@ namespace ImageChecker.Processing
                 currentProgress = new ProgressImageComparison(0, Files.Count, 0, "preparing", null, null);
 
                 ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
-                
+
                 if (Files.Count > 0)
                 {
                     Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
@@ -318,9 +320,9 @@ namespace ImageChecker.Processing
             // reset stuff
             ErrorFiles = new ConcurrentBag<string>();
             HasErrorFiles = false;
-            possibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+            PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
             HasPossibleDuplicates = false;
-            
+
             await Task.Run(async () =>
             {
                 CustomFLANN cf = new CustomFLANN();
@@ -368,7 +370,7 @@ namespace ImageChecker.Processing
                 currentProgress.Operation = "loading files canceled!";
                 ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
                 return;
-            } 
+            }
             #endregion
 
             timer.Restart();
@@ -421,7 +423,7 @@ namespace ImageChecker.Processing
                 {
                     Task imageTask = await Task.WhenAny(imageTasks).ConfigureAwait(false);
                     imageTasks.Remove(imageTask);
-                    
+
                     currentProgress.Value++;
 
                     // gauss berechnung und stopwatch verwenden
@@ -449,7 +451,7 @@ namespace ImageChecker.Processing
 
 
             HasPossibleDuplicates = PossibleDuplicates.Any();
-            
+
             if (CtsImageComparison.IsCancellationRequested)
             {
                 IsComparingImages = false;
@@ -518,7 +520,7 @@ namespace ImageChecker.Processing
                 ctsImageComparison.Dispose();
                 ctsImageComparison = null;
             }
-        } 
+        }
         #endregion
     }
 }

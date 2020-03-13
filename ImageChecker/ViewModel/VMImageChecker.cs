@@ -1,4 +1,5 @@
-﻿using ImageChecker.Factory;
+﻿using ImageChecker.DataClass;
+using ImageChecker.Factory;
 using ImageChecker.Helper;
 using ImageChecker.Processing;
 using Microsoft.Win32;
@@ -292,7 +293,12 @@ namespace ImageChecker.ViewModel
         #region PropertyChanged
         private void VMImageChecker_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-
+            switch (e.PropertyName)
+            {
+                case nameof(IncludeSubdirectories):
+                    this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+                    break;
+            }
         }
         #endregion
 
@@ -450,16 +456,20 @@ namespace ImageChecker.ViewModel
                     }
                 }
             }
+
+            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         private void RemoveFolder(DirectoryInfo folder)
         {
             Folders.Remove(folder);
+            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         private void ClearFolders()
         {
             Folders.Clear();
+            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         #region CompareImages
@@ -477,7 +487,7 @@ namespace ImageChecker.ViewModel
             {
                 if (dropFolderCommand == null)
                 {
-                    dropFolderCommand = new RelayCommand(param => DropFolder(param));
+                    dropFolderCommand = new RelayCommand(p => DropFolder(p), p => this.CanDropFolder());
                 }
                 return dropFolderCommand;
             }
@@ -485,6 +495,9 @@ namespace ImageChecker.ViewModel
 
         public void DropFolder(object inObject)
         {
+            if (this.CanDropFolder() == false)
+                return; // because the CanExecute does not get invoke while dragging, the Execute needs to be prevented when CanExecute returns false
+
             System.Windows.IDataObject ido = inObject as System.Windows.IDataObject;
             if (null == ido) return;
 
@@ -501,6 +514,12 @@ namespace ImageChecker.ViewModel
 
         private bool CanDropFolder()
         {
+            if (this.WorkerRenameFiles.IsRenamingFiles)
+                return false;
+
+            if (this.WorkerImageComparison.IsComparingImages)
+                return false;
+
             return true;
         }
         #endregion
@@ -540,6 +559,12 @@ namespace ImageChecker.ViewModel
 
         private bool CanOpenFolderAddDialog()
         {
+            if (this.WorkerRenameFiles.IsRenamingFiles)
+                return false;
+
+            if (this.WorkerImageComparison.IsComparingImages)
+                return false;
+
             return true;
         }
         #endregion
@@ -569,6 +594,12 @@ namespace ImageChecker.ViewModel
 
         private bool CanRemoveFolder()
         {
+            if (this.WorkerRenameFiles.IsRenamingFiles)
+                return false;
+
+            if (this.WorkerImageComparison.IsComparingImages)
+                return false;
+
             return true;
         }
         #endregion
@@ -588,13 +619,14 @@ namespace ImageChecker.ViewModel
             }
         }
 
-        private void ClearFolder()
-        {
-            ClearFolders();
-        }
-
         private bool CanClearFolder()
         {
+            if (this.WorkerRenameFiles.IsRenamingFiles)
+                return false;
+
+            if (this.WorkerImageComparison.IsComparingImages)
+                return false;
+
             return true;
         }
         #endregion

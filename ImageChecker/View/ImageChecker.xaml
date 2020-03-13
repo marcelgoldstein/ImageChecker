@@ -42,7 +42,17 @@
                     <Button ToolTip="Clear Directories" Grid.Column="4" Command="{Binding ClearFoldersCommand}" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
                         <Image Source="/ImageChecker;component/Icon/clear_folders.png" Stretch="Uniform" />
                     </Button>
-                    <CheckBox Content="include subdirectories" Grid.Column="5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding IncludeSubdirectories, Mode=TwoWay}"/>
+                    <CheckBox Content="include subdirectories" Grid.Column="5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding IncludeSubdirectories, Mode=TwoWay}">
+                        <CheckBox.Resources>
+                            <converter:BooleanAllFalseToTrueConverter x:Key="BooleanAllFalseToTrueConverter" />
+                        </CheckBox.Resources>
+                        <CheckBox.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAllFalseToTrueConverter}">
+                                <Binding Path="WorkerRenameFiles.IsRenamingFiles" />
+                                <Binding Path="WorkerImageComparison.IsComparingImages" />
+                            </MultiBinding>
+                        </CheckBox.IsEnabled>
+                    </CheckBox>
                 </Grid>
             </GroupBox.Header>
             <ListBox x:Name="lbDirectories" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0"
