@@ -20,6 +20,8 @@
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA.File}" Key="Left" />
         <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB.File}" Key="Right" />
+        <KeyBinding Command="{Binding MoveSelectionUpCommand}" Key="Up" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding MoveSelectionDownCommand}" Key="Down" Modifiers="Ctrl" />
     </UserControl.InputBindings>
     
     <Grid>
@@ -180,7 +182,7 @@
             </controls:MultiSelectDataGrid.Columns>
         </controls:MultiSelectDataGrid>
 
-        <GridSplitter Grid.Row="3" Height="10" HorizontalAlignment="Stretch" Margin="5,0">
+        <GridSplitter Grid.Row="3" Height="10" HorizontalAlignment="Stretch" Margin="5,0" IsTabStop="False">
             <GridSplitter.Template>
                 <ControlTemplate TargetType="{x:Type GridSplitter}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}"
@@ -243,7 +245,7 @@
                     </TextBlock.Text>
                 </TextBlock>
                 <Button Grid.Row="1" Command="{Binding ImageClickCommand}" CommandParameter="{Binding SelectedResult.FileA}" Style="{StaticResource EmptyButtonStyle}" 
-                        ContextMenuService.ShowOnDisabled="True">
+                        ContextMenuService.ShowOnDisabled="True" IsTabStop="False">
                     <Grid>
                         <Border BorderBrush="{Binding SelectedResult.SmallerOne, Converter={StaticResource ImageBorderBrushA}}" BorderThickness="5" Margin="-5">
                             <Border.Visibility>
@@ -367,7 +369,7 @@
                 </TextBlock>
 
                 <Button Grid.Row="1" Command="{Binding ImageClickCommand}" CommandParameter="{Binding SelectedResult.FileB}" Style="{StaticResource EmptyButtonStyle}" 
-                        ContextMenuService.ShowOnDisabled="True">
+                        ContextMenuService.ShowOnDisabled="True" IsTabStop="False">
                     <Grid>
                         <Border BorderBrush="{Binding SelectedResult.SmallerOne, Converter={StaticResource ImageBorderBrushB}}" BorderThickness="5" Margin="-5">
                             <Border.Visibility>
