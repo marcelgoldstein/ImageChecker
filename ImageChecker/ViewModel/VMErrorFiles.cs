@@ -68,7 +68,7 @@ namespace ImageChecker.ViewModel
 
             if (fi != null)
             {
-                File.Delete(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName);
             }
         }
 
@@ -182,7 +182,7 @@ namespace ImageChecker.ViewModel
         {
             foreach (FileInfo fi in ErrorFiles.Where(a => File.Exists(a.FullName)))
             {
-                File.Delete(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName);
             }
         }
 

@@ -501,7 +501,7 @@ namespace ImageChecker.ViewModel
 
             if (fi != null)
             {
-                File.Delete(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName);
             }
 
             if (IsExterminationModeActive)
@@ -725,7 +725,7 @@ namespace ImageChecker.ViewModel
 
             foreach (var fi in smallerOnes.Select(a => a.FullName).Distinct())
             {
-                File.Delete(fi);
+                FileOperationAPIWrapper.Send(fi);
             }
         }
 
