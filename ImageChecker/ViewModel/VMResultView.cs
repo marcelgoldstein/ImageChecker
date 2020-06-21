@@ -501,7 +501,7 @@ namespace ImageChecker.ViewModel
 
             if (fi != null)
             {
-                FileOperationAPIWrapper.Send(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
             }
 
             if (IsExterminationModeActive)
@@ -725,7 +725,7 @@ namespace ImageChecker.ViewModel
 
             foreach (var fi in smallerOnes.Select(a => a.FullName).Distinct())
             {
-                FileOperationAPIWrapper.Send(fi);
+                FileOperationAPIWrapper.Send(fi, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
             }
         }
 
