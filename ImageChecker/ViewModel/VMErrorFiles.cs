@@ -68,7 +68,7 @@ namespace ImageChecker.ViewModel
 
             if (fi != null)
             {
-                FileOperationAPIWrapper.Send(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
             }
         }
 
@@ -182,7 +182,7 @@ namespace ImageChecker.ViewModel
         {
             foreach (FileInfo fi in ErrorFiles.Where(a => File.Exists(a.FullName)))
             {
-                FileOperationAPIWrapper.Send(fi.FullName);
+                FileOperationAPIWrapper.Send(fi.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
             }
         }
 
