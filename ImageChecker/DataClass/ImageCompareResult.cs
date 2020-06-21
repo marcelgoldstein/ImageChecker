@@ -15,62 +15,62 @@ namespace ImageChecker.DataClass
         public FileImage FileA { get; set; }
         public FileImage FileB { get; set; }
 
-        private double flann;
-        public double FLANN { get { return flann; } set { SetProperty(ref flann, value); } }
+        private double _flann;
+        public double FLANN { get { return _flann; } set { SetProperty(ref _flann, value); } }
 
         public float DifferencePercentage { get; set; }
         public float DuplicatePossibility { get; set; }
 
-        private int? levenshteinResult;
+        private int? _levenshteinResult;
         public int? LevenshteinResult
         {
             get
             {
-                return levenshteinResult;
+                return _levenshteinResult;
             }
             set
             {
-                SetProperty(ref levenshteinResult, value);
+                SetProperty(ref _levenshteinResult, value);
             }
         }
 
-        private float? aForgeResult;
+        private float? _aForgeResult;
         public float? AForgeResult
         {
             get
             {
-                return aForgeResult;
+                return _aForgeResult;
             }
             set
             {
-                SetProperty(ref aForgeResult, value);
+                SetProperty(ref _aForgeResult, value);
             }
         }
 
-        private double? averagePixelA;
-        public double? AveragePixelA { get { return averagePixelA; } set { SetProperty(ref averagePixelA, value); } }
+        private double? _averagePixelA;
+        public double? AveragePixelA { get { return _averagePixelA; } set { SetProperty(ref _averagePixelA, value); } }
 
-        private double? averagePixelR;
-        public double? AveragePixelR { get { return averagePixelR; } set { SetProperty(ref averagePixelR, value); } }
+        private double? _averagePixelR;
+        public double? AveragePixelR { get { return _averagePixelR; } set { SetProperty(ref _averagePixelR, value); } }
 
-        private double? averagePixelG;
-        public double? AveragePixelG { get { return averagePixelG; } set { SetProperty(ref averagePixelG, value); } }
+        private double? _averagePixelG;
+        public double? AveragePixelG { get { return _averagePixelG; } set { SetProperty(ref _averagePixelG, value); } }
 
-        private double? averagePixelB;
-        public double? AveragePixelB { get { return averagePixelB; } set { SetProperty(ref averagePixelB, value); } }
+        private double? _averagePixelB;
+        public double? AveragePixelB { get { return _averagePixelB; } set { SetProperty(ref _averagePixelB, value); } }
 
-        private string smallerOne;
+        private string _smallerOne;
         public string SmallerOne
         {
-            get { return smallerOne; }
-            set { SetProperty(ref smallerOne, value); }
+            get { return _smallerOne; }
+            set { SetProperty(ref _smallerOne, value); }
         }
 
-        private StateEnum state;
+        private StateEnum _state;
         public StateEnum State
         {
-            get { return state; }
-            set { SetProperty(ref state, value); }
+            get { return _state; }
+            set { SetProperty(ref _state, value); }
         }
 
         public bool IsSolved
@@ -84,10 +84,7 @@ namespace ImageChecker.DataClass
         #region INotifyPropertyChanged
         public void RaisePropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

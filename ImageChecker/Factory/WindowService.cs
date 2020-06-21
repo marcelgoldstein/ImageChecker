@@ -14,20 +14,20 @@ namespace ImageChecker.Factory
 {
     public static class WindowService
     {
-        private static ObservableCollection<Window> openWindows;
+        private static ObservableCollection<Window> _openWindows;
         public static ObservableCollection<Window> OpenWindows
         {
             get
             {
-                if (openWindows == null)
+                if (_openWindows == null)
                 {
-                    openWindows = new ObservableCollection<Window>();
-                    openWindows.CollectionChanged += openWindows_CollectionChanged;
+                    _openWindows = new ObservableCollection<Window>();
+                    _openWindows.CollectionChanged += OpenWindows_CollectionChanged;
                 }
-                return openWindows;
+                return _openWindows;
             }
         }
-        static void openWindows_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        static void OpenWindows_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ObservableCollection<Window> oc = sender as ObservableCollection<Window>;
 
@@ -51,8 +51,10 @@ namespace ImageChecker.Factory
 
         public async static Task<Window> OpenWindow(ViewModelBase vm, bool modal, Action<object, CancelEventArgs> onClosing, Action<object, EventArgs> onClosed)
         {
-            MainWindow w = new MainWindow();
-            w.Content = vm;
+            MainWindow w = new MainWindow
+            {
+                Content = vm
+            };
 
             #region Sizing
             var setting = GetSettingFor(vm);
@@ -66,8 +68,8 @@ namespace ImageChecker.Factory
                 w.WindowState = bool.Parse(setting[5]) ? WindowState.Maximized : WindowState.Normal;
             }
 
-            w.Closing += w_Closing;
-            w.Closed += w_Closed;
+            w.Closing += W_Closing;
+            w.Closed += W_Closed;
             #endregion
 
             #region Closing / Closed
@@ -110,7 +112,7 @@ namespace ImageChecker.Factory
             var tcs = new TaskCompletionSource<bool>();
             using (token.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: true))
             {
-                RoutedEventHandler loadedHandler = (s, e) =>
+                void loadedHandler(object s, RoutedEventArgs e) =>
                     tcs.TrySetResult(true);
 
                 window.Loaded += loadedHandler;
@@ -135,7 +137,7 @@ namespace ImageChecker.Factory
             var tcs = new TaskCompletionSource<bool>();
             using (token.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: true))
             {
-                EventHandler closedHandler = (s, e) =>
+                void closedHandler(object s, EventArgs e) =>
                     tcs.TrySetResult(true);
 
                 window.Closed += closedHandler;
@@ -152,7 +154,7 @@ namespace ImageChecker.Factory
 
         public async static Task CloseWindowsAsync(Func<Window, bool> predicate)
         {
-            var targetWindows = openWindows.Where(predicate);
+            var targetWindows = _openWindows.Where(predicate);
 
             foreach (Window w in targetWindows.ToList())
             {
@@ -165,7 +167,7 @@ namespace ImageChecker.Factory
 
         public static void CloseWindows(Func<Window, bool> predicate)
         {
-            var targetWindows = openWindows.Where(predicate);
+            var targetWindows = _openWindows.Where(predicate);
 
             foreach (Window w in targetWindows.ToList())
             {
@@ -174,14 +176,14 @@ namespace ImageChecker.Factory
         }
 
         #region Sizing
-        private static void w_Closed(object sender, EventArgs e)
+        private static void W_Closed(object sender, EventArgs e)
         {
             Window w = sender as Window;
-            w.Closing -= w_Closing;
-            w.Closed -= w_Closed;
+            w.Closing -= W_Closing;
+            w.Closed -= W_Closed;
         }
 
-        private static void w_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private static void W_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window w = sender as Window;
 
@@ -244,18 +246,14 @@ namespace ImageChecker.Factory
 
         private static string SerializeWindowSetting(List<string> input)
         {
-            string output = string.Empty;
-
-            output = string.Join(";", input);
+            var output = string.Join(";", input);
 
             return output;
         }
 
         private static List<string> DeSerializeWindowSetting(string input)
         {
-            List<string> output = new List<string>();
-
-            output = input.Split(new string[] { ";" }, StringSplitOptions.None).ToList();
+            var output = input.Split(new string[] { ";" }, StringSplitOptions.None).ToList();
 
             return output;
         }

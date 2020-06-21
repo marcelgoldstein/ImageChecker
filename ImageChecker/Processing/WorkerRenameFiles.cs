@@ -12,154 +12,154 @@ namespace ImageChecker.Processing
     public class WorkerRenameFiles : ViewModelBase, IDisposable
     {
         #region Properties
-        private bool keepOriginalNames = true;
+        private bool _keepOriginalNames = true;
         public bool KeepOriginalNames
         {
             get
             {
-                return keepOriginalNames;
+                return _keepOriginalNames;
             }
             set
             {
-                if (keepOriginalNames != value)
+                if (_keepOriginalNames != value)
                 {
-                    keepOriginalNames = value;
+                    _keepOriginalNames = value;
                     RaisePropertyChanged("KeepOriginalNames");
                 }
             }
         }
 
-        private bool loop = true;
+        private bool _loop = true;
         public bool Loop
         {
             get
             {
-                return loop;
+                return _loop;
             }
             set
             {
-                if (loop != value)
+                if (_loop != value)
                 {
-                    loop = value;
+                    _loop = value;
                     RaisePropertyChanged("Loop");
                 }
             }
         }
 
-        private bool loopEndless;
+        private bool _loopEndless;
         public bool LoopEndless
         {
-            get { return loopEndless; }
-            set { SetProperty(ref loopEndless, value); }
+            get { return _loopEndless; }
+            set { SetProperty(ref _loopEndless, value); }
         }
 
-        private bool renameAll = false;
+        private bool _renameAll = false;
         public bool RenameAll
         {
             get
             {
-                return renameAll;
+                return _renameAll;
             }
             set
             {
-                if (renameAll != value)
+                if (_renameAll != value)
                 {
-                    renameAll = value;
+                    _renameAll = value;
                     RaisePropertyChanged("RenameAll");
                 }
             }
         }
 
-        private double fileNameLength = 10;
+        private double _fileNameLength = 10;
         public double FileNameLength
         {
             get
             {
-                return fileNameLength;
+                return _fileNameLength;
             }
             set
             {
-                if (fileNameLength != value)
+                if (_fileNameLength != value)
                 {
-                    fileNameLength = value;
+                    _fileNameLength = value;
                     RaisePropertyChanged("FileNameLength");
                 }
             }
         }
 
-        private bool isRenamingFiles = false;
+        private bool _isRenamingFiles = false;
         public bool IsRenamingFiles
         {
             get
             {
-                return isRenamingFiles;
+                return _isRenamingFiles;
             }
             set
             {
-                if (isRenamingFiles != value)
+                if (_isRenamingFiles != value)
                 {
-                    isRenamingFiles = value;
+                    _isRenamingFiles = value;
                     RaisePropertyChanged("IsRenamingFiles");
                 }
             }
         }
 
-        private bool isRenamingFilesPaused = false;
+        private bool _isRenamingFilesPaused = false;
         public bool IsRenamingFilesPaused
         {
             get
             {
-                return isRenamingFilesPaused;
+                return _isRenamingFilesPaused;
             }
             set
             {
-                if (isRenamingFilesPaused != value)
+                if (_isRenamingFilesPaused != value)
                 {
-                    isRenamingFilesPaused = value;
+                    _isRenamingFilesPaused = value;
                     RaisePropertyChanged("IsRenamingFilesPaused");
                 }
             }
         }
 
-        private CancellationTokenSource ctsRenameFiles;
+        private CancellationTokenSource _ctsRenameFiles;
         public CancellationTokenSource CtsRenameFiles
         {
             get
             {
-                if (ctsRenameFiles == null)
+                if (_ctsRenameFiles == null)
                 {
-                    ctsRenameFiles = new CancellationTokenSource();
+                    _ctsRenameFiles = new CancellationTokenSource();
                 }
 
-                return ctsRenameFiles;
+                return _ctsRenameFiles;
             }
             set
             {
-                if (ctsRenameFiles != value)
+                if (_ctsRenameFiles != value)
                 {
-                    ctsRenameFiles = value;
+                    _ctsRenameFiles = value;
                     RaisePropertyChanged("CtsRenameFiles");
                 }
             }
         }
 
-        private PauseTokenSource ptsRenameFiles;
+        private PauseTokenSource _ptsRenameFiles;
         public PauseTokenSource PtsRenameFiles
         {
             get
             {
-                if (ptsRenameFiles == null)
+                if (_ptsRenameFiles == null)
                 {
-                    ptsRenameFiles = new PauseTokenSource();
+                    _ptsRenameFiles = new PauseTokenSource();
                 }
 
-                return ptsRenameFiles;
+                return _ptsRenameFiles;
             }
             set
             {
-                if (ptsRenameFiles != value)
+                if (_ptsRenameFiles != value)
                 {
-                    ptsRenameFiles = value;
+                    _ptsRenameFiles = value;
                     RaisePropertyChanged("PtsRenameFiles");
                 }
             }
@@ -177,10 +177,10 @@ namespace ImageChecker.Processing
         #endregion
 
         #region Members
-        private IEnumerable<DirectoryInfo> folders;
-        private bool includeSubdirectories;
+        private IEnumerable<DirectoryInfo> _folders;
+        private bool _includeSubdirectories;
 
-        private ProgressRenamingFiles currentProgress;
+        private ProgressRenamingFiles _currentProgress;
         #endregion
 
         #region Methods
@@ -189,20 +189,20 @@ namespace ImageChecker.Processing
             CtsRenameFiles = new CancellationTokenSource();
             PtsRenameFiles = new PauseTokenSource();
             IsRenamingFiles = true;
-            currentProgress = new ProgressRenamingFiles(0, 0, 0, "preparing");
-            RenamingProgressInterface.Report(new ProgressRenamingFiles(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation));
+            _currentProgress = new ProgressRenamingFiles(0, 0, 0, "preparing");
+            RenamingProgressInterface.Report(new ProgressRenamingFiles(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation));
 
-            this.folders = folders;
-            this.includeSubdirectories = includeSubdirectories;
+            _folders = folders;
+            _includeSubdirectories = includeSubdirectories;
 
             do
             {
-                var files = this.folders.SelectMany(a => a.GetFiles("*.*", this.includeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                var files = _folders.SelectMany(a => a.GetFiles("*.*", _includeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
                                         .Where(a => RenameAll || a.Name.Length <= FileNameLength).ToList();
                 if (files.Count == 0 && !LoopEndless) break;
                 if (CtsRenameFiles.Token.IsCancellationRequested) break;
-                currentProgress = new ProgressRenamingFiles(0, files.Count, 0, "preparing");
-                RenamingProgressInterface.Report(new ProgressRenamingFiles(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation));
+                _currentProgress = new ProgressRenamingFiles(0, files.Count, 0, "preparing");
+                RenamingProgressInterface.Report(new ProgressRenamingFiles(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation));
                 await PtsRenameFiles.Token.WaitWhilePausedAsync();
                 for (int i = 0; i < files.Count; i++)
                 {
@@ -221,8 +221,8 @@ namespace ImageChecker.Processing
                         catch (Exception)
                         {
                         }
-                        currentProgress.Value++;
-                        RenamingProgressInterface.Report(new ProgressRenamingFiles(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation));
+                        _currentProgress.Value++;
+                        RenamingProgressInterface.Report(new ProgressRenamingFiles(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation));
                     }
                 }
 
@@ -231,11 +231,11 @@ namespace ImageChecker.Processing
             } while (Loop || LoopEndless);
 
             if (CtsRenameFiles.Token.IsCancellationRequested)
-                currentProgress.Operation = "renaming files canceled!   ";
+                _currentProgress.Operation = "renaming files canceled!   ";
             else
-                currentProgress.Operation = "renaming files completed!   ";
+                _currentProgress.Operation = "renaming files completed!   ";
 
-            RenamingProgressInterface.Report(new ProgressRenamingFiles(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation));
+            RenamingProgressInterface.Report(new ProgressRenamingFiles(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation));
             IsRenamingFiles = false;
         }
         #endregion
@@ -243,12 +243,12 @@ namespace ImageChecker.Processing
         #region IDisposable
         public void Dispose()
         {
-            if (ctsRenameFiles != null)
+            if (_ctsRenameFiles != null)
             {
-                ctsRenameFiles.Dispose();
-                ctsRenameFiles = null;
+                _ctsRenameFiles.Dispose();
+                _ctsRenameFiles = null;
             }
-        } 
+        }
         #endregion
     }
 }

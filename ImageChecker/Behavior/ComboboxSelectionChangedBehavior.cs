@@ -34,8 +34,7 @@ namespace ImageChecker.Behavior
             Selector selector = (Selector)sender;
             if (selector != null)
             {
-                ICommand command = selector.GetValue(CommandProperty) as ICommand;
-                if (command != null)
+                if (selector.GetValue(CommandProperty) is ICommand command)
                 {
                     command.Execute(selector.SelectedItem);
                 }

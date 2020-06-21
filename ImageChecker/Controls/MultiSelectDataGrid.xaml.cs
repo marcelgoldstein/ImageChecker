@@ -9,12 +9,12 @@ namespace ImageChecker.Controls
 
         public MultiSelectDataGrid()
         {
-            this.SelectionChanged += MultiSelectDataGrid_SelectionChanged;
+            SelectionChanged += MultiSelectDataGrid_SelectionChanged;
         }
 
         void MultiSelectDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.SelectedItemsList = this.SelectedItems;
+            SelectedItemsList = SelectedItems;
         }
         #region SelectedItemsList
 

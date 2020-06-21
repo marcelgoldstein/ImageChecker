@@ -14,27 +14,27 @@ namespace ImageChecker.DataClass
 
         public Mat<float> SURFDescriptors { get; set; }
 
-        private FileInfo file;
-        public FileInfo File { get { return file; } set { SetProperty(ref file, value); } }
+        private FileInfo _file;
+        public FileInfo File { get { return _file; } set { SetProperty(ref _file, value); } }
 
-        private BitmapSource bitmapImage;
-        public BitmapSource BitmapImage { get { return bitmapImage; } set { SetProperty(ref bitmapImage, value); } }
+        private BitmapSource _bitmapImage;
+        public BitmapSource BitmapImage { get { return _bitmapImage; } set { SetProperty(ref _bitmapImage, value); } }
 
-        private int? pixelCount;
+        private int? _pixelCount;
         public int? PixelCount
         {
-            get { return pixelCount; }
-            set { SetProperty(ref pixelCount, value); }
+            get { return _pixelCount; }
+            set { SetProperty(ref _pixelCount, value); }
         }
 
 
         #region ctor
         public FileImage(string filepath, Mat<float> matrix)
         {
-            this.Filepath = filepath;
-            this.SURFDescriptors = matrix;
+            Filepath = filepath;
+            SURFDescriptors = matrix;
 
-            this.PropertyChanged += this.FileImage_PropertyChanged;
+            PropertyChanged += FileImage_PropertyChanged;
         }
         #endregion ctor
 
@@ -47,10 +47,10 @@ namespace ImageChecker.DataClass
         {
             switch (e.PropertyName)
             {
-                case nameof(FileImage.BitmapImage):
-                    if (this.BitmapImage != null && this.PixelCount == null)
+                case nameof(BitmapImage):
+                    if (BitmapImage != null && PixelCount == null)
                     {
-                        this.PixelCount = this.BitmapImage.PixelWidth * this.BitmapImage.PixelHeight;
+                        PixelCount = BitmapImage.PixelWidth * BitmapImage.PixelHeight;
                     }
                     break;
                 default:
@@ -67,15 +67,15 @@ namespace ImageChecker.DataClass
                 SURFDescriptors = null;
             }
 
-            this.BitmapImage = null;
-            this.File = null;
+            BitmapImage = null;
+            File = null;
         }
         #endregion
 
         #region INotifyPropertyChanged
         public void RaisePropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -12,7 +12,7 @@ namespace ImageChecker.Converter
         {
             // 0 => IsExterminationModeActive
             // 1 => Bitmap
-            if (values.Length == 2 && values[0] is bool b && b && values[1] is BitmapImage bi)
+            if (values.Length == 2 && values[0] is bool b && b && values[1] is BitmapImage)
             {
                 return Visibility.Visible;
             }

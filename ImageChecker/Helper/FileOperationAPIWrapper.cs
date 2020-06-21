@@ -128,7 +128,7 @@ namespace ImageChecker.Helper
 
         }
 
-        private static bool deleteFile(string path, FileOperationFlags flags)
+        private static bool DeleteFile(string path, FileOperationFlags flags)
         {
             try
             {
@@ -149,7 +149,7 @@ namespace ImageChecker.Helper
 
         public static bool DeleteCompletelySilent(string path)
         {
-            return deleteFile(path,
+            return DeleteFile(path,
                               FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_NOERRORUI |
                               FileOperationFlags.FOF_SILENT);
         }

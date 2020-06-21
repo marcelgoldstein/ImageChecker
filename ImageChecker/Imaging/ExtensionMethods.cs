@@ -121,20 +121,18 @@ namespace ImageChecker.Imaging
         /// <returns>A doublearray (16x16) containing the lightness of the 256 sections</returns>
         public static byte[,] GetGrayScaleValues(this Image img, int newWidth, int newHeight)
         {
-            using (Bitmap thisOne = (Bitmap)img.Resize(newWidth, newHeight).GetGrayScaleVersion())
+            using Bitmap thisOne = (Bitmap)img.Resize(newWidth, newHeight).GetGrayScaleVersion();
+            byte[,] grayScale = new byte[newWidth, newHeight];
+
+
+            for (int y = 0; y < newHeight; y++)
             {
-                byte[,] grayScale = new byte[newWidth, newHeight];
-
-
-                for (int y = 0; y < newHeight; y++)
+                for (int x = 0; x < newWidth; x++)
                 {
-                    for (int x = 0; x < newWidth; x++)
-                    {
-                        grayScale[x, y] = (byte)Math.Abs(thisOne.GetPixel(x, y).R);
-                    }
+                    grayScale[x, y] = (byte)Math.Abs(thisOne.GetPixel(x, y).R);
                 }
-                return grayScale;
             }
+            return grayScale;
         }
 
         /// <summary>
@@ -182,7 +180,7 @@ namespace ImageChecker.Imaging
                 ImageAttributes attributes = new ImageAttributes();
 
                 //set the color matrix attribute
-                attributes.SetColorMatrix(ColorMatrix);
+                attributes.SetColorMatrix(_colorMatrix);
 
                 //draw the original image on the new image
                 //using the grayscale color matrix
@@ -195,7 +193,7 @@ namespace ImageChecker.Imaging
 
         //the colormatrix needed to grayscale an image
         //http://www.switchonthecode.com/tutorials/csharp-tutorial-convert-a-color-image-to-grayscale
-        static readonly ColorMatrix ColorMatrix = new ColorMatrix(new float[][] 
+        private static readonly ColorMatrix _colorMatrix = new ColorMatrix(new float[][]
         {
             new float[] {.3f, .3f, .3f, 0, 0},
             new float[] {.59f, .59f, .59f, 0, 0},

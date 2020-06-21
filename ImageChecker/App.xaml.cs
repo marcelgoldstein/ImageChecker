@@ -15,9 +15,9 @@ namespace ImageChecker
         {
             base.OnStartup(e);
 
-            System.Windows.FrameworkElement.LanguageProperty.OverrideMetadata(
-                typeof(System.Windows.FrameworkElement),
-                new System.Windows.FrameworkPropertyMetadata(
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(
                     System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             AppDomain.CurrentDomain.UnhandledException += (a, exception) => File.AppendAllText("errorlog.txt", string.Format("Sender: {1}    -    Type: {2}{0}", Environment.NewLine, a.ToString(), exception.ToString()));

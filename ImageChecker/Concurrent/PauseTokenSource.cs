@@ -13,49 +13,49 @@ namespace ImageChecker.Concurrent
     public class PauseTokenSource
     {
 
-        private TaskCompletionSource<bool> m_paused;
+        private TaskCompletionSource<bool> _paused;
         internal static readonly Task s_completedTask = Task.FromResult(true);
 
-        private Stopwatch timer = new Stopwatch();
-        private List<TimeSpan> pauses;
+        private readonly Stopwatch _timer = new Stopwatch();
+        private List<TimeSpan> _pauses;
         public List<TimeSpan> Pauses
         {
-            get { if (pauses == null) pauses = new List<TimeSpan>(); return pauses; }
+            get { if (_pauses == null) _pauses = new List<TimeSpan>(); return _pauses; }
         }
 
 
-        public bool IsPauseRequested { get { return m_paused != null; } }
+        public bool IsPauseRequested { get { return _paused != null; } }
 
         public void Pause()
         {
-            timer.Restart();
+            _timer.Restart();
             if (!IsPauseRequested)
             {
                 Interlocked.CompareExchange(
-                                ref m_paused, new TaskCompletionSource<bool>(), null); 
+                                ref _paused, new TaskCompletionSource<bool>(), null);
             }
         }
 
         public void Unpause()
         {
-            timer.Stop();
-            Pauses.Add(timer.Elapsed);
+            _timer.Stop();
+            Pauses.Add(_timer.Elapsed);
 
             if (IsPauseRequested)
             {
                 while (true)
                 {
-                    var tcs = m_paused;
+                    var tcs = _paused;
                     if (tcs == null) return;
-                    if (Interlocked.CompareExchange(ref m_paused, null, tcs) == tcs)
+                    if (Interlocked.CompareExchange(ref _paused, null, tcs) == tcs)
                     {
                         tcs.SetResult(true);
                         break;
                     }
-                } 
+                }
             }
         }
-        
+
         public PauseToken Token
         {
             get
@@ -66,22 +66,22 @@ namespace ImageChecker.Concurrent
 
         internal Task WaitWhilePausedAsync()
         {
-            var cur = m_paused;
+            var cur = _paused;
             return cur != null ? cur.Task : s_completedTask;
         }
     }
 
     public struct PauseToken
     {
-        private readonly PauseTokenSource m_source;
-        internal PauseToken(PauseTokenSource source) { m_source = source; }
+        private readonly PauseTokenSource _source;
+        internal PauseToken(PauseTokenSource source) { _source = source; }
 
-        public bool IsPausedRequested { get { return m_source != null && m_source.IsPauseRequested; } }
+        public bool IsPausedRequested { get { return _source != null && _source.IsPauseRequested; } }
 
         public Task WaitWhilePausedAsync()
         {
             return IsPausedRequested ?
-                m_source.WaitWhilePausedAsync() :
+                _source.WaitWhilePausedAsync() :
                 PauseTokenSource.s_completedTask;
         }
     }

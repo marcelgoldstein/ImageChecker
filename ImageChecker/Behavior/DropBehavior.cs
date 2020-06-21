@@ -1,5 +1,5 @@
-﻿using System.Windows.Input;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Input;
 
 namespace ImageChecker.Behavior
 {
@@ -15,7 +15,7 @@ namespace ImageChecker.Behavior
         /// The Dependency property. To allow for Binding, a dependency
         /// property must be used.
         /// </summary>
-        private static readonly DependencyProperty PreviewDropCommandProperty =
+        private static readonly DependencyProperty _previewDropCommandProperty =
                     DependencyProperty.RegisterAttached
                     (
                         "PreviewDropCommand",
@@ -41,7 +41,7 @@ namespace ImageChecker.Behavior
         /// <param name="inCommand">An object that implements ICommand.</param>
         public static void SetPreviewDropCommand(this UIElement inUIElement, ICommand inCommand)
         {
-            inUIElement.SetValue(PreviewDropCommandProperty, inCommand);
+            inUIElement.SetValue(_previewDropCommandProperty, inCommand);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace ImageChecker.Behavior
         /// <returns>An object that implements ICommand.</returns>
         public static ICommand GetPreviewDropCommand(UIElement inUIElement)
         {
-            return (ICommand)inUIElement.GetValue(PreviewDropCommandProperty);
+            return (ICommand)inUIElement.GetValue(_previewDropCommandProperty);
         }
         #endregion
 
@@ -66,8 +66,7 @@ namespace ImageChecker.Behavior
         private static void PreviewDropCommandPropertyChangedCallBack(
             DependencyObject inDependencyObject, DependencyPropertyChangedEventArgs inEventArgs)
         {
-            UIElement uiElement = inDependencyObject as UIElement;
-            if (null == uiElement) return;
+            if (!(inDependencyObject is UIElement uiElement)) return;
 
             uiElement.PreviewDragOver += (sender, args) =>
             {
