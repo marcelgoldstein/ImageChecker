@@ -263,6 +263,35 @@ namespace ImageChecker.ViewModel
             }
         }
 
+        private void SelectPreviousUnsolvedResult()
+        {
+            if (SelectedResult != null && Results != null)
+            {
+                var item = SelectedResult; // save it cause of the bug?
+
+                var view = ResultsView.View.OfType<ImageCompareResult>().ToList(); // this line magically changes the 'SelectedResult' to the first in the listing...???? -> its a bug, not a feature
+
+                item = view.Take(view.IndexOf(item)).LastOrDefault(a => a.IsSolved == false);
+
+                if (item != null)
+                {
+                    SelectedResult = item;
+                }
+                else
+                {
+                    item = view.LastOrDefault(a => a.IsSolved == false);
+
+                    if (item != null)
+                    {
+                        SelectedResult = item;
+                    }
+                }
+
+                // scroll into view
+
+            }
+        }
+
         private void UnloadImages(List<ImageCompareResult> results)
         {
             foreach (var r in results)
@@ -519,7 +548,60 @@ namespace ImageChecker.ViewModel
 
             return false;
         }
-        #endregion
+        #endregion DeleteFile
+
+        #region MoveSelectionDown
+        private ICommand moveSelectionDownCommand;
+        public ICommand MoveSelectionDownCommand
+        {
+            get
+            {
+                if (moveSelectionDownCommand == null)
+                {
+                    moveSelectionDownCommand = new RelayCommand(p => MoveSelectionDown(),
+                        p => CanMoveSelectionDown());
+                }
+                return moveSelectionDownCommand;
+            }
+        }
+
+        public void MoveSelectionDown()
+        {
+            SelectNextUnsolvedResult();
+        }
+
+        private bool CanMoveSelectionDown()
+        {
+            return true;
+        }
+        #endregion MoveSelectionUp
+
+        #region MoveSelectionUp
+        private ICommand moveSelectionUpCommand;
+        public ICommand MoveSelectionUpCommand
+        {
+            get
+            {
+                if (moveSelectionUpCommand == null)
+                {
+                    moveSelectionUpCommand = new RelayCommand(p => MoveSelectionUp(),
+                        p => CanMoveSelectionUp());
+                }
+                return moveSelectionUpCommand;
+            }
+        }
+
+        public void MoveSelectionUp()
+        {
+            SelectPreviousUnsolvedResult();
+        }
+
+        private bool CanMoveSelectionUp()
+        {
+            return true;
+        }
+        #endregion MoveSelectionUp
+
         #region OpenFolder
         private ICommand openFolderCommand;
         public ICommand OpenFolderCommand
@@ -558,10 +640,9 @@ namespace ImageChecker.ViewModel
 
             return false;
         }
-        #endregion
+        #endregion OpenFolder
+
         #region ImageClick
-
-
         private ICommand imageClickCommand;
         public ICommand ImageClickCommand
         {
@@ -614,6 +695,7 @@ namespace ImageChecker.ViewModel
             return false;
         }
         #endregion ImageClick
+
         #region CutFile
         private ICommand cutFileCommand;
         public ICommand CutFileCommand
@@ -647,7 +729,8 @@ namespace ImageChecker.ViewModel
 
             return false;
         }
-        #endregion 
+        #endregion CutFile
+
         #region CutSmallerOnes
         private ICommand cutSmallerOnesCommand;
         public ICommand CutSmallerOnesCommand
@@ -691,7 +774,8 @@ namespace ImageChecker.ViewModel
 
             return true;
         }
-        #endregion 
+        #endregion CutSmallerOnes
+
         #region DeleteSmallerOnes
         private ICommand deleteSmallerOnesCommand;
         public ICommand DeleteSmallerOnesCommand
@@ -736,7 +820,8 @@ namespace ImageChecker.ViewModel
 
             return true;
         }
-        #endregion 
+        #endregion DeleteSmallerOnes
+
         #region RestoreImage
         private ICommand restoreImageCommand;
         public ICommand RestoreImageCommand
@@ -772,7 +857,8 @@ namespace ImageChecker.ViewModel
             return true;
 
         }
-        #endregion 
+        #endregion RestoreImage
+
         #region SaveAsImage
         private ICommand saveAsImageCommand;
         public ICommand SaveAsImageCommand
@@ -818,7 +904,8 @@ namespace ImageChecker.ViewModel
 
             return true;
         }
-        #endregion
+        #endregion SaveAsImage
+
         #region RestoreSelectedImages
         private ICommand restoreSelectedImagesCommand;
         public ICommand RestoreSelectedImagesCommand
@@ -857,8 +944,8 @@ namespace ImageChecker.ViewModel
             return true;
 
         }
-        #endregion 
-        #endregion
+        #endregion RestoreSelectedImages
+        #endregion Commands
 
         #region IDisposable
         public void Dispose()
