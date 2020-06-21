@@ -23,64 +23,64 @@ namespace ImageChecker.ViewModel
         public string WindowTitle { get { return "ImageChecker"; } }
         public string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
 
-        private TaskbarItemInfo windowTaskbarInfo;
+        private TaskbarItemInfo _windowTaskbarInfo;
         public TaskbarItemInfo WindowTaskbarInfo
         {
-            get { if (windowTaskbarInfo == null) windowTaskbarInfo = new TaskbarItemInfo(); return windowTaskbarInfo; }
-            set { windowTaskbarInfo = value; }
+            get { if (_windowTaskbarInfo == null) _windowTaskbarInfo = new TaskbarItemInfo(); return _windowTaskbarInfo; }
+            set { _windowTaskbarInfo = value; }
         }
         #endregion
 
         #region Folderselect
-        private ObservableCollection<DirectoryInfo> folders;
+        private ObservableCollection<DirectoryInfo> _folders;
         public ObservableCollection<DirectoryInfo> Folders
         {
             get
             {
-                if (folders == null)
-                    folders = new ObservableCollection<DirectoryInfo>();
+                if (_folders == null)
+                    _folders = new ObservableCollection<DirectoryInfo>();
 
-                return folders;
+                return _folders;
             }
             set
             {
-                if (folders != value)
+                if (_folders != value)
                 {
-                    folders = value;
+                    _folders = value;
                     RaisePropertyChanged("Folders");
                 }
             }
         }
 
-        private DirectoryInfo selectedFolder;
+        private DirectoryInfo _selectedFolder;
         public DirectoryInfo SelectedFolder
         {
             get
             {
-                return selectedFolder;
+                return _selectedFolder;
             }
             set
             {
-                if (selectedFolder != value)
+                if (_selectedFolder != value)
                 {
-                    selectedFolder = value;
+                    _selectedFolder = value;
                     RaisePropertyChanged("SelectedFolder");
                 }
             }
         }
 
-        private bool includeSubdirectories = true;
+        private bool _includeSubdirectories = true;
         public bool IncludeSubdirectories
         {
             get
             {
-                return includeSubdirectories;
+                return _includeSubdirectories;
             }
             set
             {
-                if (includeSubdirectories != value)
+                if (_includeSubdirectories != value)
                 {
-                    includeSubdirectories = value;
+                    _includeSubdirectories = value;
                     RaisePropertyChanged("IncludeSubdirectories");
                 }
 
@@ -89,136 +89,136 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region ProgressBar
-        private double progressMinimum = 0;
+        private double _progressMinimum = 0;
         public double ProgressMinimum
         {
             get
             {
-                return progressMinimum;
+                return _progressMinimum;
             }
             set
             {
-                if (progressMinimum != value)
+                if (_progressMinimum != value)
                 {
-                    progressMinimum = value;
+                    _progressMinimum = value;
                     RaisePropertyChanged("ProgressMinimum");
                 }
             }
         }
 
-        private double progressMaximum = 100;
+        private double _progressMaximum = 100;
         public double ProgressMaximum
         {
             get
             {
-                return progressMaximum;
+                return _progressMaximum;
             }
             set
             {
-                if (progressMaximum != value)
+                if (_progressMaximum != value)
                 {
-                    progressMaximum = value;
+                    _progressMaximum = value;
                     RaisePropertyChanged("ProgressMaximum");
                 }
             }
         }
 
-        private double progressValue = 0;
+        private double _progressValue = 0;
         public double ProgressValue
         {
             get
             {
-                return progressValue;
+                return _progressValue;
             }
             set
             {
-                if (progressValue != value)
+                if (_progressValue != value)
                 {
-                    progressValue = value;
+                    _progressValue = value;
                     RaisePropertyChanged("ProgressValue");
                 }
             }
         }
 
-        private string progressText = "";
+        private string _progressText = "";
         public string ProgressText
         {
             get
             {
-                return progressText;
+                return _progressText;
             }
             set
             {
-                if (progressText != value)
+                if (_progressText != value)
                 {
-                    progressText = value;
+                    _progressText = value;
                     RaisePropertyChanged("ProgressText");
                 }
             }
         }
 
-        private string progressTask = "";
+        private string _progressTask = "";
         public string ProgressTask
         {
             get
             {
-                return progressTask;
+                return _progressTask;
             }
             set
             {
-                if (progressTask != value)
+                if (_progressTask != value)
                 {
-                    progressTask = value;
+                    _progressTask = value;
                     RaisePropertyChanged("ProgressTask");
                 }
             }
         }
 
-        private long? estimatedRemainingSeconds;
+        private long? _estimatedRemainingSeconds;
         public long? EstimatedRemainingSeconds
         {
-            get { return estimatedRemainingSeconds; }
-            set { SetProperty(ref estimatedRemainingSeconds, value); }
+            get { return _estimatedRemainingSeconds; }
+            set { SetProperty(ref _estimatedRemainingSeconds, value); }
         }
 
         #endregion
 
         #region Workers
-        private WorkerRenameFiles workerRenameFiles;
+        private WorkerRenameFiles _workerRenameFiles;
         public WorkerRenameFiles WorkerRenameFiles
         {
             get
             {
-                if (workerRenameFiles == null)
-                    workerRenameFiles = new WorkerRenameFiles();
+                if (_workerRenameFiles == null)
+                    _workerRenameFiles = new WorkerRenameFiles();
 
-                return workerRenameFiles;
+                return _workerRenameFiles;
             }
             set
             {
-                if (workerRenameFiles != value)
+                if (_workerRenameFiles != value)
                 {
-                    workerRenameFiles = value;
+                    _workerRenameFiles = value;
                     RaisePropertyChanged("WorkerRenameFiles");
                 }
             }
         }
 
-        private WorkerImageComparison workerImageComparison;
+        private WorkerImageComparison _workerImageComparison;
         public WorkerImageComparison WorkerImageComparison
         {
             get
             {
-                if (workerImageComparison == null)
-                    workerImageComparison = new WorkerImageComparison();
+                if (_workerImageComparison == null)
+                    _workerImageComparison = new WorkerImageComparison();
 
-                return workerImageComparison;
+                return _workerImageComparison;
             }
             set
             {
-                if (workerImageComparison != value)
+                if (_workerImageComparison != value)
                 {
-                    workerImageComparison = value;
+                    _workerImageComparison = value;
                     RaisePropertyChanged("WorkerImageComparison");
                 }
             }
@@ -226,14 +226,14 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region ImageOptionen
-        private List<Tuple<int, string>> preScaleOptions;
+        private List<Tuple<int, string>> _preScaleOptions;
         public List<Tuple<int, string>> PreScaleOptions
         {
             get
             {
-                if (preScaleOptions == null)
+                if (_preScaleOptions == null)
                 {
-                    preScaleOptions = new List<Tuple<int, string>>()
+                    _preScaleOptions = new List<Tuple<int, string>>()
                     {
                         //new Tuple<int, string>(1, "64 pixels"),
                         new Tuple<int, string>(2, "128 pixels"),
@@ -242,23 +242,23 @@ namespace ImageChecker.ViewModel
                         new Tuple<int, string>(0, "original"),
                     };
                 }
-                return preScaleOptions;
+                return _preScaleOptions;
             }
-            set { SetProperty(ref preScaleOptions, value); }
+            set { SetProperty(ref _preScaleOptions, value); }
         }
 
-        private Tuple<int, string> selectedPreScaleOption;
+        private Tuple<int, string> _selectedPreScaleOption;
         public Tuple<int, string> SelectedPreScaleOption
         {
-            get { return selectedPreScaleOption; }
-            set { SetProperty(ref selectedPreScaleOption, value); }
+            get { return _selectedPreScaleOption; }
+            set { SetProperty(ref _selectedPreScaleOption, value); }
         }
 
-        private double threshold;
+        private double _threshold;
         public double Threshold
         {
-            get { return threshold; }
-            set { SetProperty(ref threshold, value); }
+            get { return _threshold; }
+            set { SetProperty(ref _threshold, value); }
         }
 
         #endregion
@@ -280,13 +280,13 @@ namespace ImageChecker.ViewModel
             {
                 while (true)
                 {
-                    this.WorkerImageComparison.RefreshSelectedPossibleDuplicatesCount(this.Threshold);
+                    WorkerImageComparison.RefreshSelectedPossibleDuplicatesCount(Threshold);
 
                     await Task.Delay(200);
                 }
             });
 
-            this.PropertyChanged += VMImageChecker_PropertyChanged;
+            PropertyChanged += VMImageChecker_PropertyChanged;
         }
         #endregion
 
@@ -296,7 +296,7 @@ namespace ImageChecker.ViewModel
             switch (e.PropertyName)
             {
                 case nameof(IncludeSubdirectories):
-                    this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+                    WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
                     break;
             }
         }
@@ -336,10 +336,10 @@ namespace ImageChecker.ViewModel
             switch (e.PropertyName)
             {
                 case "KeepOriginalNames":
-                    WorkerRenameFiles.Loop = WorkerRenameFiles.KeepOriginalNames ? WorkerRenameFiles.Loop : false;
+                    WorkerRenameFiles.Loop = WorkerRenameFiles.KeepOriginalNames && WorkerRenameFiles.Loop;
                     break;
                 case "Loop":
-                    WorkerRenameFiles.LoopEndless = WorkerRenameFiles.Loop ? WorkerRenameFiles.LoopEndless : false;
+                    WorkerRenameFiles.LoopEndless = WorkerRenameFiles.Loop && WorkerRenameFiles.LoopEndless;
                     break;
                 case "IsRenamingFiles":
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -457,19 +457,19 @@ namespace ImageChecker.ViewModel
                 }
             }
 
-            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+            WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         private void RemoveFolder(DirectoryInfo folder)
         {
             Folders.Remove(folder);
-            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+            WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         private void ClearFolders()
         {
             Folders.Clear();
-            this.WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+            WorkerImageComparison.PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
         }
 
         #region CompareImages
@@ -480,26 +480,25 @@ namespace ImageChecker.ViewModel
         #region Commands
         #region Folderselect
         #region DropFolder
-        private ICommand dropFolderCommand;
+        private ICommand _dropFolderCommand;
         public ICommand DropFolderCommand
         {
             get
             {
-                if (dropFolderCommand == null)
+                if (_dropFolderCommand == null)
                 {
-                    dropFolderCommand = new RelayCommand(p => DropFolder(p), p => this.CanDropFolder());
+                    _dropFolderCommand = new RelayCommand(p => DropFolder(p), p => CanDropFolder());
                 }
-                return dropFolderCommand;
+                return _dropFolderCommand;
             }
         }
 
         public void DropFolder(object inObject)
         {
-            if (this.CanDropFolder() == false)
+            if (CanDropFolder() == false)
                 return; // because the CanExecute does not get invoke while dragging, the Execute needs to be prevented when CanExecute returns false
 
-            System.Windows.IDataObject ido = inObject as System.Windows.IDataObject;
-            if (null == ido) return;
+            if (!(inObject is System.Windows.IDataObject ido)) return;
 
             if (ido.GetDataPresent(System.Windows.DataFormats.FileDrop))
             {
@@ -514,10 +513,10 @@ namespace ImageChecker.ViewModel
 
         private bool CanDropFolder()
         {
-            if (this.WorkerRenameFiles.IsRenamingFiles)
+            if (WorkerRenameFiles.IsRenamingFiles)
                 return false;
 
-            if (this.WorkerImageComparison.IsComparingImages)
+            if (WorkerImageComparison.IsComparingImages)
                 return false;
 
             return true;
@@ -525,27 +524,29 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region AddFolder
-        private ICommand openFolderAddDialogCommand;
+        private ICommand _openFolderAddDialogCommand;
         public ICommand OpenFolderAddDialogCommand
         {
             get
             {
-                if (openFolderAddDialogCommand == null)
+                if (_openFolderAddDialogCommand == null)
                 {
-                    openFolderAddDialogCommand = new RelayCommand(param => OpenFolderAddDialog(),
+                    _openFolderAddDialogCommand = new RelayCommand(param => OpenFolderAddDialog(),
                         param => CanOpenFolderAddDialog());
                 }
-                return openFolderAddDialogCommand;
+                return _openFolderAddDialogCommand;
             }
         }
 
         public void OpenFolderAddDialog()
         {
             // Create a "Save As" dialog for selecting a directory (HACK)
-            var dialog = new SaveFileDialog();
-            dialog.Title = "Select a Directory"; // instead of default "Save As"
-            dialog.Filter = "Directory|*.this.directory"; // Prevents displaying files
-            dialog.FileName = "select"; // Filename will then be "select.this.directory"
+            var dialog = new SaveFileDialog
+            {
+                Title = "Select a Directory", // instead of default "Save As"
+                Filter = "Directory|*.this.directory", // Prevents displaying files
+                FileName = "select" // Filename will then be "select.this.directory"
+            };
             if (dialog.ShowDialog() == true)
             {
                 string path = dialog.FileName;
@@ -559,10 +560,10 @@ namespace ImageChecker.ViewModel
 
         private bool CanOpenFolderAddDialog()
         {
-            if (this.WorkerRenameFiles.IsRenamingFiles)
+            if (WorkerRenameFiles.IsRenamingFiles)
                 return false;
 
-            if (this.WorkerImageComparison.IsComparingImages)
+            if (WorkerImageComparison.IsComparingImages)
                 return false;
 
             return true;
@@ -570,17 +571,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region RemoveFolder
-        private ICommand removeFolderCommand;
+        private ICommand _removeFolderCommand;
         public ICommand RemoveFolderCommand
         {
             get
             {
-                if (removeFolderCommand == null)
+                if (_removeFolderCommand == null)
                 {
-                    removeFolderCommand = new RelayCommand(param => RemoveFolder(),
+                    _removeFolderCommand = new RelayCommand(param => RemoveFolder(),
                         param => CanRemoveFolder());
                 }
-                return removeFolderCommand;
+                return _removeFolderCommand;
             }
         }
 
@@ -594,10 +595,10 @@ namespace ImageChecker.ViewModel
 
         private bool CanRemoveFolder()
         {
-            if (this.WorkerRenameFiles.IsRenamingFiles)
+            if (WorkerRenameFiles.IsRenamingFiles)
                 return false;
 
-            if (this.WorkerImageComparison.IsComparingImages)
+            if (WorkerImageComparison.IsComparingImages)
                 return false;
 
             return true;
@@ -605,26 +606,26 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region ClearFolder
-        private ICommand clearFoldersCommand;
+        private ICommand _clearFoldersCommand;
         public ICommand ClearFoldersCommand
         {
             get
             {
-                if (clearFoldersCommand == null)
+                if (_clearFoldersCommand == null)
                 {
-                    clearFoldersCommand = new RelayCommand(param => ClearFolders(),
+                    _clearFoldersCommand = new RelayCommand(param => ClearFolders(),
                         param => CanClearFolder());
                 }
-                return clearFoldersCommand;
+                return _clearFoldersCommand;
             }
         }
 
         private bool CanClearFolder()
         {
-            if (this.WorkerRenameFiles.IsRenamingFiles)
+            if (WorkerRenameFiles.IsRenamingFiles)
                 return false;
 
-            if (this.WorkerImageComparison.IsComparingImages)
+            if (WorkerImageComparison.IsComparingImages)
                 return false;
 
             return true;
@@ -634,17 +635,17 @@ namespace ImageChecker.ViewModel
 
         #region RenameFiles
         #region StartRenameCommand
-        private ICommand startRenameCommand;
+        private ICommand _startRenameCommand;
         public ICommand StartRenameCommand
         {
             get
             {
-                if (startRenameCommand == null)
+                if (_startRenameCommand == null)
                 {
-                    startRenameCommand = new RelayCommand(param => StartRename(),
+                    _startRenameCommand = new RelayCommand(param => StartRename(),
                         param => CanStartRename());
                 }
-                return startRenameCommand;
+                return _startRenameCommand;
             }
         }
 
@@ -677,17 +678,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region PauseRenameCommand
-        private ICommand pauseRenameCommand;
+        private ICommand _pauseRenameCommand;
         public ICommand PauseRenameCommand
         {
             get
             {
-                if (pauseRenameCommand == null)
+                if (_pauseRenameCommand == null)
                 {
-                    pauseRenameCommand = new RelayCommand(param => PauseUnpauseRenaming(param as bool?),
+                    _pauseRenameCommand = new RelayCommand(param => PauseUnpauseRenaming(param as bool?),
                         param => CanPauseRenaming());
                 }
-                return pauseRenameCommand;
+                return _pauseRenameCommand;
             }
         }
 
@@ -733,17 +734,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region CancelRenameCommand
-        private ICommand cancelRenameCommand;
+        private ICommand _cancelRenameCommand;
         public ICommand CancelRenameCommand
         {
             get
             {
-                if (cancelRenameCommand == null)
+                if (_cancelRenameCommand == null)
                 {
-                    cancelRenameCommand = new RelayCommand(param => CancelRenaming(),
+                    _cancelRenameCommand = new RelayCommand(param => CancelRenaming(),
                         param => CanCancelRenaming());
                 }
-                return cancelRenameCommand;
+                return _cancelRenameCommand;
             }
         }
 
@@ -774,17 +775,17 @@ namespace ImageChecker.ViewModel
 
         #region ImageComparison
         #region StartImageComparisonCommand
-        private ICommand startImageComparisonCommand;
+        private ICommand _startImageComparisonCommand;
         public ICommand StartImageComparisonCommand
         {
             get
             {
-                if (startImageComparisonCommand == null)
+                if (_startImageComparisonCommand == null)
                 {
-                    startImageComparisonCommand = new RelayCommand(param => StartImageComparison(),
+                    _startImageComparisonCommand = new RelayCommand(param => StartImageComparison(),
                         param => CanStartImageComparison());
                 }
-                return startImageComparisonCommand;
+                return _startImageComparisonCommand;
             }
         }
 
@@ -841,17 +842,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region PauseImageComparisonCommand
-        private ICommand pauseImageComparisonCommand;
+        private ICommand _pauseImageComparisonCommand;
         public ICommand PauseImageComparisonCommand
         {
             get
             {
-                if (pauseImageComparisonCommand == null)
+                if (_pauseImageComparisonCommand == null)
                 {
-                    pauseImageComparisonCommand = new RelayCommand(param => PauseUnpauseImageComparison(param as bool?),
+                    _pauseImageComparisonCommand = new RelayCommand(param => PauseUnpauseImageComparison(param as bool?),
                         param => CanPauseImageComparison());
                 }
-                return pauseImageComparisonCommand;
+                return _pauseImageComparisonCommand;
             }
         }
 
@@ -897,17 +898,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region CancelImageComparisonCommand
-        private ICommand cancelImageComparisonCommand;
+        private ICommand _cancelImageComparisonCommand;
         public ICommand CancelImageComparisonCommand
         {
             get
             {
-                if (cancelImageComparisonCommand == null)
+                if (_cancelImageComparisonCommand == null)
                 {
-                    cancelImageComparisonCommand = new RelayCommand(param => CancelImageComparison(),
+                    _cancelImageComparisonCommand = new RelayCommand(param => CancelImageComparison(),
                         param => CanCancelImageComparison());
                 }
-                return cancelImageComparisonCommand;
+                return _cancelImageComparisonCommand;
             }
         }
 
@@ -936,17 +937,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region ShowErrorFilesCommand
-        private ICommand showErrorFilesCommand;
+        private ICommand _showErrorFilesCommand;
         public ICommand ShowErrorFilesCommand
         {
             get
             {
-                if (showErrorFilesCommand == null)
+                if (_showErrorFilesCommand == null)
                 {
-                    showErrorFilesCommand = new RelayCommand(param => ShowErrorFiles(),
+                    _showErrorFilesCommand = new RelayCommand(param => ShowErrorFiles(),
                         param => CanShowErrorFiles());
                 }
-                return showErrorFilesCommand;
+                return _showErrorFilesCommand;
             }
         }
 
@@ -954,11 +955,11 @@ namespace ImageChecker.ViewModel
         {
             var vm = new VMErrorFiles(WorkerImageComparison.ErrorFiles);
 
-            Action<object, EventArgs> onClosed = (sender, args) =>
+            void onClosed(object sender, EventArgs args)
             {
                 WorkerImageComparison.ErrorFiles = new ConcurrentBag<string>(WorkerImageComparison.ErrorFiles.Where(a => File.Exists(a)));
                 vm.Dispose();
-            };
+            }
 
             await WindowService.OpenWindow(vm, true, null, onClosed);
         }
@@ -970,17 +971,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region ShowResults
-        private ICommand showResultsCommand;
+        private ICommand _showResultsCommand;
         public ICommand ShowResultsCommand
         {
             get
             {
-                if (showResultsCommand == null)
+                if (_showResultsCommand == null)
                 {
-                    showResultsCommand = new RelayCommand(async param => await ShowResults(),
+                    _showResultsCommand = new RelayCommand(async param => await ShowResults(),
                         param => CanShowResults());
                 }
-                return showResultsCommand;
+                return _showResultsCommand;
             }
         }
 
@@ -988,10 +989,10 @@ namespace ImageChecker.ViewModel
         {
             var vm = new VMResultView(WorkerImageComparison.PossibleDuplicates.Where(a => a.FLANN >= Threshold), WorkerImageComparison.Files.Count);
 
-            Action<object, EventArgs> onClosed = (sender, args) =>
+            void onClosed(object sender, EventArgs args)
             {
                 vm.Dispose();
-            };
+            }
 
             await WindowService.OpenWindow(vm, true, null, onClosed);
         }
@@ -1016,19 +1017,19 @@ namespace ImageChecker.ViewModel
         #region IDisposable
         public void Dispose()
         {
-            if (workerImageComparison != null)
+            if (_workerImageComparison != null)
             {
-                workerImageComparison.Dispose();
-                workerImageComparison = null;
+                _workerImageComparison.Dispose();
+                _workerImageComparison = null;
             }
 
-            if (workerRenameFiles != null)
+            if (_workerRenameFiles != null)
             {
-                workerRenameFiles.Dispose();
-                workerRenameFiles = null;
+                _workerRenameFiles.Dispose();
+                _workerRenameFiles = null;
             }
 
-            this.PropertyChanged -= VMImageChecker_PropertyChanged;
+            PropertyChanged -= VMImageChecker_PropertyChanged;
         }
         #endregion
     }

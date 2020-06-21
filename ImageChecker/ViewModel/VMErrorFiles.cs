@@ -17,19 +17,19 @@ namespace ImageChecker.ViewModel
         public string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
         #endregion
 
-        private ObservableCollection<FileInfo> errorFiles;
+        private ObservableCollection<FileInfo> _errorFiles;
         public ObservableCollection<FileInfo> ErrorFiles
         {
             get
             {
-                if (errorFiles == null)
-                    errorFiles = new ObservableCollection<FileInfo>();
+                if (_errorFiles == null)
+                    _errorFiles = new ObservableCollection<FileInfo>();
 
-                return errorFiles;
+                return _errorFiles;
             }
             set
             {
-                SetProperty(ref errorFiles, value);
+                SetProperty(ref _errorFiles, value);
             }
         }
         #endregion
@@ -48,25 +48,23 @@ namespace ImageChecker.ViewModel
         #region Commands
         #region ListBoxItems
         #region DeleteFile
-        private ICommand deleteFileCommand;
+        private ICommand _deleteFileCommand;
         public ICommand DeleteFileCommand
         {
             get
             {
-                if (deleteFileCommand == null)
+                if (_deleteFileCommand == null)
                 {
-                    deleteFileCommand = new RelayCommand(p => DeleteFile(p),
+                    _deleteFileCommand = new RelayCommand(p => DeleteFile(p),
                         p => CanDeleteFile(p));
                 }
-                return deleteFileCommand;
+                return _deleteFileCommand;
             }
         }
 
         public void DeleteFile(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 FileOperationAPIWrapper.Send(fi.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
             }
@@ -74,9 +72,7 @@ namespace ImageChecker.ViewModel
 
         private bool CanDeleteFile(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 return File.Exists(fi.FullName);
             }
@@ -86,25 +82,23 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region OpenFolder
-        private ICommand openFolderCommand;
+        private ICommand _openFolderCommand;
         public ICommand OpenFolderCommand
         {
             get
             {
-                if (openFolderCommand == null)
+                if (_openFolderCommand == null)
                 {
-                    openFolderCommand = new RelayCommand(p => OpenFolder(p),
+                    _openFolderCommand = new RelayCommand(p => OpenFolder(p),
                         p => CanOpenFolder(p));
                 }
-                return openFolderCommand;
+                return _openFolderCommand;
             }
         }
 
         public void OpenFolder(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 Path.GetDirectoryName(fi.FullName);
 
@@ -114,9 +108,7 @@ namespace ImageChecker.ViewModel
 
         private bool CanOpenFolder(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 return File.Exists(fi.FullName);
             }
@@ -125,25 +117,23 @@ namespace ImageChecker.ViewModel
         }
         #endregion  
         #region OpenImage
-        private ICommand openImageCommand;
+        private ICommand _openImageCommand;
         public ICommand OpenImageCommand
         {
             get
             {
-                if (openImageCommand == null)
+                if (_openImageCommand == null)
                 {
-                    openImageCommand = new RelayCommand(p => OpenImage(p),
+                    _openImageCommand = new RelayCommand(p => OpenImage(p),
                         p => CanOpenImage(p));
                 }
-                return openImageCommand;
+                return _openImageCommand;
             }
         }
 
         public void OpenImage(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 Process.Start(new ProcessStartInfo(fi.FullName) { UseShellExecute = true });
             }
@@ -151,9 +141,7 @@ namespace ImageChecker.ViewModel
 
         private bool CanOpenImage(object file)
         {
-            FileInfo fi = file as FileInfo;
-
-            if (fi != null)
+            if (file is FileInfo fi)
             {
                 return File.Exists(fi.FullName);
             }
@@ -164,17 +152,17 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region DeleteAllFiles
-        private ICommand deleteAllFilesCommand;
+        private ICommand _deleteAllFilesCommand;
         public ICommand DeleteAllFilesCommand
         {
             get
             {
-                if (deleteAllFilesCommand == null)
+                if (_deleteAllFilesCommand == null)
                 {
-                    deleteAllFilesCommand = new RelayCommand(p => DeleteAllFiles(),
+                    _deleteAllFilesCommand = new RelayCommand(p => DeleteAllFiles(),
                         p => CanDeleteAllFiles());
                 }
-                return deleteAllFilesCommand;
+                return _deleteAllFilesCommand;
             }
         }
 
@@ -193,17 +181,17 @@ namespace ImageChecker.ViewModel
         #endregion 
 
         #region CutAllFiles
-        private ICommand cutAllFilesCommand;
+        private ICommand _cutAllFilesCommand;
         public ICommand CutAllFilesCommand
         {
             get
             {
-                if (cutAllFilesCommand == null)
+                if (_cutAllFilesCommand == null)
                 {
-                    cutAllFilesCommand = new RelayCommand(p => CutAllFiles(),
+                    _cutAllFilesCommand = new RelayCommand(p => CutAllFiles(),
                         p => CanCutAllFiles());
                 }
-                return cutAllFilesCommand;
+                return _cutAllFilesCommand;
             }
         }
 

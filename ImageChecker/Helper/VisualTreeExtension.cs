@@ -12,16 +12,17 @@ namespace ImageChecker.Helper
             for (int i = 0; i < childrenCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
-
-                T childType = child as T;
-                if (childType == null)
+                switch (child)
                 {
-                    foreach (var other in FindVisualChildren<T>(child))
-                        yield return other;
-                }
-                else
-                {
-                    yield return (T)child;
+                    case T c:
+                        yield return c;
+                        break;
+                    default:
+                        {
+                            foreach (var other in FindVisualChildren<T>(child))
+                                yield return other;
+                            break;
+                        }
                 }
             }
         }

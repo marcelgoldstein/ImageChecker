@@ -1,8 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using System.Windows.Media;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ImageChecker.Behavior
 {
@@ -18,7 +18,7 @@ namespace ImageChecker.Behavior
         /// The Dependency property. To allow for Binding, a dependency
         /// property must be used.
         /// </summary>
-        private static readonly DependencyProperty WindowSizeActivatedProperty =
+        private static readonly DependencyProperty _windowSizeActivatedProperty =
                     DependencyProperty.RegisterAttached
                     (
                         "WindowSizeActivated",
@@ -31,12 +31,12 @@ namespace ImageChecker.Behavior
         #region The getter and setter
         public static void SetWindowSizeActivated(this Window window, bool value)
         {
-            window.SetValue(WindowSizeActivatedProperty, value);
+            window.SetValue(_windowSizeActivatedProperty, value);
         }
 
         public static bool GetWindowSizeActivated(Window window)
         {
-            return (bool)window.GetValue(WindowSizeActivatedProperty);
+            return (bool)window.GetValue(_windowSizeActivatedProperty);
         }
         #endregion
 
@@ -44,8 +44,7 @@ namespace ImageChecker.Behavior
         private static void WindowSizeActivatedPropertyChangedCallBack(
             DependencyObject inDependencyObject, DependencyPropertyChangedEventArgs inEventArgs)
         {
-            Window window = inDependencyObject as Window;
-            if (window == null) return;
+            if (!(inDependencyObject is Window window)) return;
 
             window.SizeChanged += Window_SizeChanged;
         }
@@ -76,15 +75,17 @@ namespace ImageChecker.Behavior
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
 
-                T childType = child as T;
-                if (childType == null)
+                switch (child)
                 {
-                    foreach (var other in FindVisualChildren<T>(child))
-                        yield return other;
-                }
-                else
-                {
-                    yield return (T)child;
+                    case T c:
+                        yield return c;
+                        break;
+                    default:
+                        {
+                            foreach (var other in FindVisualChildren<T>(child))
+                                yield return other;
+                            break;
+                        }
                 }
             }
         }

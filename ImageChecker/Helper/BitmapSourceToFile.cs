@@ -28,49 +28,43 @@ namespace ImageChecker.Helper
                         break;
                     default:
                         break;
-                } 
+                }
             }
         }
 
         public static void SaveAsBmp(this BitmapSource image, string filepath)
         {
-            using (var fileStream = new FileStream(filepath, FileMode.Create))
-            {
-                var encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
-            }
+            using var fileStream = new FileStream(filepath, FileMode.Create);
+            var encoder = new BmpBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            encoder.Save(fileStream);
         }
 
         public static void SaveAsPng(this BitmapSource image, string filepath)
         {
-            using (var fileStream = new FileStream(filepath, FileMode.Create))
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
-            }
+            using var fileStream = new FileStream(filepath, FileMode.Create);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            encoder.Save(fileStream);
         }
 
         public static void SaveAsJpeg(this BitmapSource image, string filepath)
         {
-            using (var fileStream = new FileStream(filepath, FileMode.Create))
-            {
-                var encoder = new JpegBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
-            }
+            using var fileStream = new FileStream(filepath, FileMode.Create);
+            var encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            encoder.Save(fileStream);
         }
 
         public static void SaveAsTiff(this BitmapSource image, string filepath)
         {
-            using (var fileStream = new FileStream(filepath, FileMode.Create))
+            using var fileStream = new FileStream(filepath, FileMode.Create);
+            var encoder = new TiffBitmapEncoder
             {
-                var encoder = new TiffBitmapEncoder();
-                encoder.Compression = TiffCompressOption.Zip;
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
-            }
+                Compression = TiffCompressOption.Zip
+            };
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            encoder.Save(fileStream);
         }
     }
 }

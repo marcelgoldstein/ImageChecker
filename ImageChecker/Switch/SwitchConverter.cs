@@ -12,14 +12,11 @@ namespace ImageChecker.Switch
     [ContentProperty("Cases")]
     public class SwitchConverter : IValueConverter
     {
-        // Converter instances.
-        List<SwitchConverterCase> _cases;
-
         #region Public Properties.
         /// <summary>
         /// Gets or sets an array of <see cref="SwitchConverterCase"/>s that this converter can use to produde values from.
         /// </summary>
-        public List<SwitchConverterCase> Cases { get { return _cases; } set { _cases = value; } }
+        public List<SwitchConverterCase> Cases { get; set; }
         public object Default { get; set; }
         #endregion
         #region Construction.
@@ -29,7 +26,7 @@ namespace ImageChecker.Switch
         public SwitchConverter()
         {
             // Create the cases array.
-            _cases = new List<SwitchConverterCase>();
+            Cases = new List<SwitchConverterCase>();
         }
         #endregion
 
@@ -46,13 +43,11 @@ namespace ImageChecker.Switch
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             bool isSame;
-            decimal a;
-            decimal b;
 
-            if (_cases != null && _cases.Count > 0)
-                for (int i = 0; i < _cases.Count; i++)
+            if (Cases != null && Cases.Count > 0)
+                for (int i = 0; i < Cases.Count; i++)
                 {
-                    SwitchConverterCase targetCase = _cases[i];
+                    SwitchConverterCase targetCase = Cases[i];
 
 
                     if (value == null && targetCase.When == null)
@@ -65,7 +60,7 @@ namespace ImageChecker.Switch
                             isSame = (value.ToString() == targetCase.When.ToString());
 
                             // wenn beide numeric sind, dann a - b == 0?
-                            if (!isSame && Decimal.TryParse(value.ToString(), out a) && Decimal.TryParse(targetCase.When.ToString(), out b))
+                            if (!isSame && Decimal.TryParse(value.ToString(), out var a) && Decimal.TryParse(targetCase.When.ToString(), out var b))
                             {
                                 isSame = (a - b == 0);
                             }
@@ -136,8 +131,8 @@ namespace ImageChecker.Switch
         public SwitchConverterCase(object when, object then)
         {
             // Hook up the instances.
-            this._then = then;
-            this._when = when;
+            _then = then;
+            _when = when;
         }
         #endregion
 

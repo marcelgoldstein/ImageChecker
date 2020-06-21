@@ -18,79 +18,79 @@ namespace ImageChecker.Processing
     public class WorkerImageComparison : ViewModelBase, IDisposable
     {
         #region Properties
-        private bool isComparingImages = false;
+        private bool _isComparingImages = false;
         public bool IsComparingImages
         {
             get
             {
-                return isComparingImages;
+                return _isComparingImages;
             }
             set
             {
-                if (isComparingImages != value)
+                if (_isComparingImages != value)
                 {
-                    isComparingImages = value;
+                    _isComparingImages = value;
                     RaisePropertyChanged("IsComparingImages");
                 }
             }
         }
 
-        private bool isComparingImagesPaused = false;
+        private bool _isComparingImagesPaused = false;
         public bool IsComparingImagesPaused
         {
             get
             {
-                return isComparingImagesPaused;
+                return _isComparingImagesPaused;
             }
             set
             {
-                if (isComparingImagesPaused != value)
+                if (_isComparingImagesPaused != value)
                 {
-                    isComparingImagesPaused = value;
+                    _isComparingImagesPaused = value;
                     RaisePropertyChanged("IsComparingImagesPaused");
                 }
             }
         }
 
-        private CancellationTokenSource ctsImageComparison;
+        private CancellationTokenSource _ctsImageComparison;
         public CancellationTokenSource CtsImageComparison
         {
             get
             {
-                if (ctsImageComparison == null)
+                if (_ctsImageComparison == null)
                 {
-                    ctsImageComparison = new CancellationTokenSource();
+                    _ctsImageComparison = new CancellationTokenSource();
                 }
 
-                return ctsImageComparison;
+                return _ctsImageComparison;
             }
             set
             {
-                if (ctsImageComparison != value)
+                if (_ctsImageComparison != value)
                 {
-                    ctsImageComparison = value;
+                    _ctsImageComparison = value;
                     RaisePropertyChanged("CtsImageComparision");
                 }
             }
         }
 
-        private PauseTokenSource ptsImageComparison;
+        private PauseTokenSource _ptsImageComparison;
         public PauseTokenSource PtsImageComparison
         {
             get
             {
-                if (ptsImageComparison == null)
+                if (_ptsImageComparison == null)
                 {
-                    ptsImageComparison = new PauseTokenSource();
+                    _ptsImageComparison = new PauseTokenSource();
                 }
 
-                return ptsImageComparison;
+                return _ptsImageComparison;
             }
             set
             {
-                if (ptsImageComparison != value)
+                if (_ptsImageComparison != value)
                 {
-                    ptsImageComparison = value;
+                    _ptsImageComparison = value;
                     RaisePropertyChanged("PtsImageComparison");
                 }
             }
@@ -99,136 +99,136 @@ namespace ImageChecker.Processing
         public Progress<ProgressImageComparison> ImageComparisonProgress { get; set; }
         public IProgress<ProgressImageComparison> ImageComparisonProgressInterface { get { return ImageComparisonProgress as IProgress<ProgressImageComparison>; } }
 
-        private ConcurrentBag<string> errorFiles;
+        private ConcurrentBag<string> _errorFiles;
         public ConcurrentBag<string> ErrorFiles
         {
             get
             {
-                if (errorFiles == null)
-                    errorFiles = new ConcurrentBag<string>();
+                if (_errorFiles == null)
+                    _errorFiles = new ConcurrentBag<string>();
 
-                return errorFiles;
+                return _errorFiles;
             }
             set
             {
-                if (errorFiles != value)
+                if (_errorFiles != value)
                 {
-                    errorFiles = value;
+                    _errorFiles = value;
                     RaisePropertyChanged("ErrorFiles");
                 }
             }
         }
 
-        private bool hasErrorFiles;
+        private bool _hasErrorFiles;
         public bool HasErrorFiles
         {
             get
             {
-                return hasErrorFiles;
+                return _hasErrorFiles;
             }
             set
             {
-                if (hasErrorFiles != value)
+                if (_hasErrorFiles != value)
                 {
-                    hasErrorFiles = value;
+                    _hasErrorFiles = value;
                     RaisePropertyChanged("HasErrorFiles");
                 }
             }
         }
 
-        private ConcurrentBag<ImageCompareResult> possibleDuplicates;
+        private ConcurrentBag<ImageCompareResult> _possibleDuplicates;
         public ConcurrentBag<ImageCompareResult> PossibleDuplicates
         {
             get
             {
-                if (possibleDuplicates == null)
-                    possibleDuplicates = new ConcurrentBag<ImageCompareResult>();
+                if (_possibleDuplicates == null)
+                    _possibleDuplicates = new ConcurrentBag<ImageCompareResult>();
 
-                return possibleDuplicates;
+                return _possibleDuplicates;
             }
             set
             {
-                SetProperty(ref possibleDuplicates, value);
+                SetProperty(ref _possibleDuplicates, value);
             }
         }
 
-        private int selectedPossibleDuplicatesCount = -1;
+        private int _selectedPossibleDuplicatesCount = -1;
         public int SelectedPossibleDuplicatesCount
         {
-            get { return selectedPossibleDuplicatesCount; }
-            set { SetProperty(ref selectedPossibleDuplicatesCount, value); }
+            get { return _selectedPossibleDuplicatesCount; }
+            set { SetProperty(ref _selectedPossibleDuplicatesCount, value); }
         }
 
-        private string selectedPossibleDuplicatesCountMessage;
+        private string _selectedPossibleDuplicatesCountMessage;
         public string SelectedPossibleDuplicatesCountMessage
         {
-            get { return selectedPossibleDuplicatesCountMessage; }
-            set { SetProperty(ref selectedPossibleDuplicatesCountMessage, value); }
+            get { return _selectedPossibleDuplicatesCountMessage; }
+            set { SetProperty(ref _selectedPossibleDuplicatesCountMessage, value); }
         }
 
-        private bool hasPossibleDuplicates;
+        private bool _hasPossibleDuplicates;
         public bool HasPossibleDuplicates
         {
             get
             {
-                return hasPossibleDuplicates;
+                return _hasPossibleDuplicates;
             }
             set
             {
-                SetProperty(ref hasPossibleDuplicates, value);
+                SetProperty(ref _hasPossibleDuplicates, value);
             }
         }
 
-        private List<DirectoryInfo> folders;
+        private List<DirectoryInfo> _folders;
         public List<DirectoryInfo> Folders
         {
-            get { if (folders == null) folders = new List<DirectoryInfo>(); return folders; }
-            set { SetProperty(ref folders, value); }
+            get { if (_folders == null) _folders = new List<DirectoryInfo>(); return _folders; }
+            set { SetProperty(ref _folders, value); }
         }
 
-        private bool includeSubdirectories;
+        private bool _includeSubdirectories;
         public bool IncludeSubdirectories
         {
-            get { return includeSubdirectories; }
-            set { SetProperty(ref includeSubdirectories, value); }
+            get { return _includeSubdirectories; }
+            set { SetProperty(ref _includeSubdirectories, value); }
         }
 
-        private bool preResizeImages;
+        private bool _preResizeImages;
         public bool PreResizeImages
         {
-            get { return preResizeImages; }
-            set { SetProperty(ref preResizeImages, value); }
+            get { return _preResizeImages; }
+            set { SetProperty(ref _preResizeImages, value); }
         }
 
-        private int preResizeScale;
+        private int _preResizeScale;
         public int PreResizeScale
         {
-            get { return preResizeScale; }
-            set { SetProperty(ref preResizeScale, value); }
+            get { return _preResizeScale; }
+            set { SetProperty(ref _preResizeScale, value); }
         }
 
-        private double threshold;
+        private double _threshold;
         public double Threshold
         {
-            get { return threshold; }
-            set { SetProperty(ref threshold, value); }
+            get { return _threshold; }
+            set { SetProperty(ref _threshold, value); }
         }
 
-        private List<string> files;
+        private List<string> _files;
         public List<string> Files
         {
-            get { return files; }
-            set { SetProperty(ref files, value); }
+            get { return _files; }
+            set { SetProperty(ref _files, value); }
         }
 
         #endregion
 
         #region Members
-        private ProgressImageComparison currentProgress;
+        private ProgressImageComparison _currentProgress;
 
-        private Stopwatch timer = new Stopwatch();
-        private long fullOperationsCount = 0L;
-        private long fullOperationsCurrentCount = 0L;
+        private readonly Stopwatch _timer = new Stopwatch();
+        private long _fullOperationsCount = 0L;
+        private long _fullOperationsCurrentCount = 0L;
         #endregion
 
         #region ctr
@@ -249,8 +249,8 @@ namespace ImageChecker.Processing
                 case nameof(PossibleDuplicates):
                     HasPossibleDuplicates = PossibleDuplicates.Any();
                     break;
-                case nameof(this.SelectedPossibleDuplicatesCount):
-                    this.SelectedPossibleDuplicatesCountMessage = $"show [{this.SelectedPossibleDuplicatesCount}] results";
+                case nameof(SelectedPossibleDuplicatesCount):
+                    SelectedPossibleDuplicatesCountMessage = $"show [{SelectedPossibleDuplicatesCount}] results";
                     break;
                 default:
                     break;
@@ -261,7 +261,7 @@ namespace ImageChecker.Processing
         #region Methods
         public void RefreshSelectedPossibleDuplicatesCount(double treshold)
         {
-            this.SelectedPossibleDuplicatesCount = this.PossibleDuplicates.Count(a => a.FLANN >= treshold);
+            SelectedPossibleDuplicatesCount = PossibleDuplicates.Count(a => a.FLANN >= treshold);
         }
 
         public async Task Start()
@@ -292,9 +292,9 @@ namespace ImageChecker.Processing
                     .Where(a => validExtensions.Contains(a.Extension.ToUpper()))
                     .Select(a => a.FullName).ToList();
 
-                currentProgress = new ProgressImageComparison(0, Files.Count, 0, "preparing", null, null);
+                _currentProgress = new ProgressImageComparison(0, Files.Count, 0, "preparing", null, null);
 
-                ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
+                ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, null));
 
                 if (Files.Count > 0)
                 {
@@ -312,9 +312,9 @@ namespace ImageChecker.Processing
             IsComparingImages = true;
 
             #region loading from files
-            currentProgress.Value = 0;
-            currentProgress.Operation = "loading files";
-            ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
+            _currentProgress.Value = 0;
+            _currentProgress.Operation = "loading files";
+            ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, null));
 
             ConcurrentBag<FileImage> preLoadedFileImagesSource = new ConcurrentBag<FileImage>();
             // reset stuff
@@ -345,8 +345,8 @@ namespace ImageChecker.Processing
                     Task imageTask = await Task.WhenAny(imageTasks).ConfigureAwait(false);
                     imageTasks.Remove(imageTask);
 
-                    currentProgress.Value++;
-                    ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
+                    _currentProgress.Value++;
+                    ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, null));
 
                     if (CtsImageComparison.Token.IsCancellationRequested)
                         break;
@@ -355,36 +355,36 @@ namespace ImageChecker.Processing
 
                     if (nextIndex < files.Count)
                     {
-                        imageTasks.Add(cf.ComputeSingleDescriptorsAsync(files[nextIndex], preLoadedFileImagesSource, errorFiles, PreResizeImages, PreResizeScale));
+                        imageTasks.Add(cf.ComputeSingleDescriptorsAsync(files[nextIndex], preLoadedFileImagesSource, _errorFiles, PreResizeImages, PreResizeScale));
                         nextIndex++;
                     }
                 }
             });
 
-            if (errorFiles.Count > 0)
+            if (_errorFiles.Count > 0)
                 HasErrorFiles = true;
 
             if (CtsImageComparison.IsCancellationRequested)
             {
                 IsComparingImages = false;
-                currentProgress.Operation = "loading files canceled!";
-                ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
+                _currentProgress.Operation = "loading files canceled!";
+                ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, null));
                 return;
             }
             #endregion
 
-            timer.Restart();
+            _timer.Restart();
             CtsImageComparison = new CancellationTokenSource();
             PtsImageComparison = new PauseTokenSource();
             long fullOperationsCurrentToDoCount = 0;
             long secondsElapsed = 0;
             long secondsToGo = 0;
 
-            currentProgress.Value = 0;
-            currentProgress.Maximum = preLoadedFileImagesSource.Count;
-            fullOperationsCount = MathHelper.SumToN((long)currentProgress.Maximum - 1L);
-            currentProgress.Operation = "comparing images";
-            ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, null));
+            _currentProgress.Value = 0;
+            _currentProgress.Maximum = preLoadedFileImagesSource.Count;
+            _fullOperationsCount = MathHelper.SumToN((long)_currentProgress.Maximum - 1L);
+            _currentProgress.Operation = "comparing images";
+            ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, null));
 
             await Task.Run(async () =>
             {
@@ -394,9 +394,11 @@ namespace ImageChecker.Processing
 
                 foreach (var item in toDo)
                 {
-                    var wi = new WorkItem();
-                    wi.ItemToCheck = item;
-                    wi.ItemsToCheckAgainst = toDo.Skip(toDo.IndexOf(item) + 1).ToList();
+                    var wi = new WorkItem
+                    {
+                        ItemToCheck = item,
+                        ItemsToCheckAgainst = toDo.Skip(toDo.IndexOf(item) + 1).ToList()
+                    };
                     if (Path.GetExtension(wi.ItemToCheck.Filepath).ToUpper() == ".gif".ToUpper())
                         wi.ItemsToCheckAgainst.RemoveAll(a => Path.GetExtension(a.Filepath).ToUpper() != ".gif".ToUpper()); // wenn item ein .gif ist, alle nicht-.gifs nicht gegenprüfen
                     else
@@ -424,15 +426,15 @@ namespace ImageChecker.Processing
                     Task imageTask = await Task.WhenAny(imageTasks).ConfigureAwait(false);
                     imageTasks.Remove(imageTask);
 
-                    currentProgress.Value++;
+                    _currentProgress.Value++;
 
                     // gauss berechnung und stopwatch verwenden
-                    fullOperationsCurrentCount = MathHelper.PartialSumToNProgress((long)currentProgress.Maximum, (long)currentProgress.Value);
-                    fullOperationsCurrentToDoCount = fullOperationsCount - fullOperationsCurrentCount;
-                    secondsElapsed = (long)(timer.Elapsed.TotalSeconds - (PtsImageComparison.Pauses.Sum(a => a.TotalSeconds)));
-                    secondsToGo = (long)(((double)secondsElapsed / (double)fullOperationsCurrentCount) * (double)fullOperationsCurrentToDoCount);
+                    _fullOperationsCurrentCount = MathHelper.PartialSumToNProgress((long)_currentProgress.Maximum, (long)_currentProgress.Value);
+                    fullOperationsCurrentToDoCount = _fullOperationsCount - _fullOperationsCurrentCount;
+                    secondsElapsed = (long)(_timer.Elapsed.TotalSeconds - (PtsImageComparison.Pauses.Sum(a => a.TotalSeconds)));
+                    secondsToGo = (long)(((double)secondsElapsed / (double)_fullOperationsCurrentCount) * (double)fullOperationsCurrentToDoCount);
 
-                    ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, secondsToGo, secondsElapsed));
+                    ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, secondsToGo, secondsElapsed));
 
                     if (CtsImageComparison.Token.IsCancellationRequested)
                         break;
@@ -446,7 +448,7 @@ namespace ImageChecker.Processing
                     }
                 }
 
-                this.ClearFalsePositives();
+                ClearFalsePositives();
             });
 
 
@@ -455,17 +457,17 @@ namespace ImageChecker.Processing
             if (CtsImageComparison.IsCancellationRequested)
             {
                 IsComparingImages = false;
-                currentProgress.Operation = "comparing images canceled!";
-                ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, secondsElapsed));
-                timer.Stop();
+                _currentProgress.Operation = "comparing images canceled!";
+                ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, secondsElapsed));
+                _timer.Stop();
                 return;
             }
             else
             { // erfolgreich und vollständig durchlaufen
                 IsComparingImages = false;
-                currentProgress.Operation = "comparing images completed!";
-                ImageComparisonProgressInterface.Report(new ProgressImageComparison(currentProgress.Minimum, currentProgress.Maximum, currentProgress.Value, currentProgress.Operation, null, secondsElapsed));
-                timer.Stop();
+                _currentProgress.Operation = "comparing images completed!";
+                ImageComparisonProgressInterface.Report(new ProgressImageComparison(_currentProgress.Minimum, _currentProgress.Maximum, _currentProgress.Value, _currentProgress.Operation, null, secondsElapsed));
+                _timer.Stop();
                 return;
             }
         }
@@ -478,7 +480,7 @@ namespace ImageChecker.Processing
 
         private void ClearFalsePositives()
         {
-            var dups = this.PossibleDuplicates.Where(a => a.FLANN < 100D).ToList();
+            var dups = PossibleDuplicates.Where(a => a.FLANN < 100D).ToList();
 
             var flattedDups = dups.Select(a => new ClearResult { FilePath = a.FileA.Filepath, ICR = a }).Concat(dups.Select(b => new ClearResult { FilePath = b.FileB.Filepath, ICR = b }));
 
@@ -501,24 +503,23 @@ namespace ImageChecker.Processing
                                                 .Select(a => a.ICR)
                                                 .Distinct();
 
-            var icrList = this.PossibleDuplicates.Except(badResults).ToList();
+            var icrList = PossibleDuplicates.Except(badResults).ToList();
 
-            ImageCompareResult icr;
-            while (this.PossibleDuplicates.TryTake(out icr))
+            while (PossibleDuplicates.TryTake(out var icr))
             { } // so lange items entfernen, wie ein Item erfolgreich entfernt wurde....
 
             foreach (var item in icrList)
-                this.PossibleDuplicates.Add(item);
+                PossibleDuplicates.Add(item);
         }
         #endregion
 
         #region IDisposable
         public void Dispose()
         {
-            if (ctsImageComparison != null)
+            if (_ctsImageComparison != null)
             {
-                ctsImageComparison.Dispose();
-                ctsImageComparison = null;
+                _ctsImageComparison.Dispose();
+                _ctsImageComparison = null;
             }
         }
         #endregion

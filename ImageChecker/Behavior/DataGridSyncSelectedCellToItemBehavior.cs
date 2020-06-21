@@ -40,10 +40,8 @@ namespace ImageChecker.Behavior
                 {
                     grid.Dispatcher.Invoke(() =>
                     {
-                        var selectedRow = grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) as DataGridRow;
-
                         // selectedRow can be null due to virtualization
-                        if (selectedRow != null)
+                        if (grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) is DataGridRow selectedRow)
                         {
                             selectedRow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                         }

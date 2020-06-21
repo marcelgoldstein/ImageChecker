@@ -17,10 +17,10 @@ namespace ImageChecker.Imaging
 {
     public class CustomFLANN : IDisposable
     {
-        private const double surfHessianThresh = 400;
-        private const int Knn = 2;
+        private const double SURF_HESSIAN_THRESH = 400;
+        private const int KNN = 2;
 
-        private SURF surfDetector = SURF.Create(surfHessianThresh);
+        private SURF _surfDetector = SURF.Create(SURF_HESSIAN_THRESH);
 
         /// <summary>
         /// Computes image descriptors.
@@ -63,7 +63,7 @@ namespace ImageChecker.Imaging
                     origImage.Dispose();
                     scaledImage.Dispose();
 
-                    this.surfDetector.DetectAndCompute(grayedImage, null, out _, descriptors);
+                    _surfDetector.DetectAndCompute(grayedImage, null, out _, descriptors);
 
                     preLoadedFileImagesSource.Add(new FileImage(fileName, descriptors));
                 }
@@ -102,12 +102,12 @@ namespace ImageChecker.Imaging
 
                     similarity = 0D;
 
-                    var indices = new Mat<int>(source.SURFDescriptors.Rows, Knn); // matrix that will contain indices of the 2-nearest neighbors found
-                    var dists = new Mat<float>(source.SURFDescriptors.Rows, Knn); // matrix that will contain distances to the 2-nearest neighbors found
+                    var indices = new Mat<int>(source.SURFDescriptors.Rows, KNN); // matrix that will contain indices of the 2-nearest neighbors found
+                    var dists = new Mat<float>(source.SURFDescriptors.Rows, KNN); // matrix that will contain distances to the 2-nearest neighbors found
 
                     // create FLANN index with 4 kd-trees and perform KNN search over it look for 2 nearest neighbours
                     var flannIndex = new OpenCvSharp.Flann.Index(target.SURFDescriptors, new KDTreeIndexParams(4));
-                    flannIndex.KnnSearch(source.SURFDescriptors, indices, dists, Knn, new SearchParams(32));
+                    flannIndex.KnnSearch(source.SURFDescriptors, indices, dists, KNN, new SearchParams(32));
 
                     for (int i = 0; i < indices.Rows; i++)
                     {
@@ -135,10 +135,10 @@ namespace ImageChecker.Imaging
 
         public void Dispose()
         {
-            if (surfDetector != null)
+            if (_surfDetector != null)
             {
-                surfDetector.Dispose();
-                surfDetector = null;
+                _surfDetector.Dispose();
+                _surfDetector = null;
             }
         }
     }
