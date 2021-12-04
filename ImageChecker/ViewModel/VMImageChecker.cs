@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Shell;
@@ -20,7 +21,7 @@ namespace ImageChecker.ViewModel
     {
         #region Properties
         #region Window
-        public string WindowTitle { get { return "ImageChecker"; } }
+        public string WindowTitle { get { return $"{Assembly.GetEntryAssembly().GetName().Name} v{Assembly.GetEntryAssembly().GetName().Version}"; } }
         public string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
 
         private TaskbarItemInfo _windowTaskbarInfo;
