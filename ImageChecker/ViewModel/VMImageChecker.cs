@@ -8,9 +8,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Shell;
@@ -19,6 +21,10 @@ namespace ImageChecker.ViewModel
 {
     public class VMImageChecker : ViewModelBase, IDisposable
     {
+        #region Const
+        private const string PROJECT_PAGE_URL = "https://github.com/marcelgoldstein/ImageChecker";
+        #endregion
+
         #region Properties
         #region Window
         public string WindowTitle { get { return $"{Assembly.GetEntryAssembly().GetName().Name} v{Assembly.GetEntryAssembly().GetName().Version}"; } }
@@ -479,6 +485,38 @@ namespace ImageChecker.ViewModel
         #endregion
 
         #region Commands
+        #region Menu
+        #region OpenProjectPage
+        private ICommand _openProjectPageCommand;
+        public ICommand OpenProjectPageCommand
+        {
+            get
+            {
+                if (_openProjectPageCommand == null)
+                {
+                    _openProjectPageCommand = new RelayCommand(p => OpenProjectPage(p), p => CanOpenProjectPage(p));
+                }
+                return _openProjectPageCommand;
+            }
+        }
+
+        public void OpenProjectPage(object p)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = PROJECT_PAGE_URL,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
+
+        private bool CanOpenProjectPage(object p)
+        {
+            return true;
+        }
+        #endregion OpenProjectPage
+        #endregion Menu
+
         #region Folderselect
         #region DropFolder
         private ICommand _dropFolderCommand;
