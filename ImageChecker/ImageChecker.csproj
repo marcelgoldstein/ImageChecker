@@ -2,18 +2,13 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!--<TargetFramework>net48</TargetFramework>-->
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Icon\app.ico</ApplicationIcon>
-    <Version>1.0.6</Version>
+    <Version>1.0.7.0</Version>
     <PackageProjectUrl>https://github.com/marcelgoldstein/ImageChecker</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marcelgoldstein/ImageChecker</RepositoryUrl>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <!--<PublishTrimmed>true</PublishTrimmed>-->
-    <!--<PublishReadyToRun>true</PublishReadyToRun>-->
-    <!--<PublishSingleFile>true</PublishSingleFile>-->
-    <!--<RuntimeIdentifier>win-x64</RuntimeIdentifier>-->
+    <AssemblyVersion>1.0.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.0.20201013" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.5.3.20210817" />
   </ItemGroup>
 </Project>
