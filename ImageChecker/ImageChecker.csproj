@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Icon\app.ico</ApplicationIcon>
-    <Version>1.0.7.0</Version>
+    <Version>1.0.8.0</Version>
     <PackageProjectUrl>https://github.com/marcelgoldstein/ImageChecker</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marcelgoldstein/ImageChecker</RepositoryUrl>
     <AssemblyVersion>1.0.7.0</AssemblyVersion>
