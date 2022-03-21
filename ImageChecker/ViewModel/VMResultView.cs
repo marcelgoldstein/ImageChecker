@@ -98,7 +98,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     private StatusFilter _selectedStatusFilter;
     public StatusFilter SelectedStatusFilter
     {
-        get { if (_selectedStatusFilter == null) _selectedStatusFilter = StatusFilters.First(); return _selectedStatusFilter; }
+        get { if (_selectedStatusFilter == default) _selectedStatusFilter = StatusFilters.First(); return _selectedStatusFilter; }
         set => SetProperty(ref _selectedStatusFilter, value);
     }
     #endregion
@@ -138,7 +138,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     public VMResultView(IEnumerable<ImageCompareResult> items, int totalFilesProcessed)
     {
         PropertyChanged += VMResultView_PropertyChanged;
-
+        
         Results.Clear();
         Results.AddRange(items.OrderByDescending(a => a.FLANN));
 
@@ -156,7 +156,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             });
         });
 
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             while (!_isDisposed)
             {

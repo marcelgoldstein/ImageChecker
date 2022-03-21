@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace ImageChecker.DataClass;
 
-public class FileImage : IDisposable, INotifyPropertyChanged
+public sealed class FileImage : IDisposable, INotifyPropertyChanged
 {
     public string Filepath { get; set; }
 
@@ -59,7 +59,7 @@ public class FileImage : IDisposable, INotifyPropertyChanged
     }
 
     #region IDisposable
-    public virtual void Dispose()
+    public void Dispose()
     {
         if (SURFDescriptors != null)
         {
@@ -80,7 +80,7 @@ public class FileImage : IDisposable, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+    private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
     {
         if (!EqualityComparer<T>.Default.Equals(field, value))
         {
