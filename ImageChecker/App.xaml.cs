@@ -4,41 +4,40 @@ using System;
 using System.IO;
 using System.Windows;
 
-namespace ImageChecker
+namespace ImageChecker;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    protected override async void OnStartup(StartupEventArgs e)
     {
-        protected override async void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
+        base.OnStartup(e);
 
-            FrameworkElement.LanguageProperty.OverrideMetadata(
-                typeof(FrameworkElement),
-                new FrameworkPropertyMetadata(
-                    System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
+        FrameworkElement.LanguageProperty.OverrideMetadata(
+            typeof(FrameworkElement),
+            new FrameworkPropertyMetadata(
+                System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-            AppDomain.CurrentDomain.UnhandledException += (a, exception) => File.AppendAllText("errorlog.txt", string.Format("Sender: {1}    -    Type: {2}{0}", Environment.NewLine, a.ToString(), exception.ToString()));
+        AppDomain.CurrentDomain.UnhandledException += (a, exception) => File.AppendAllText("errorlog.txt", string.Format("Sender: {1}    -    Type: {2}{0}", Environment.NewLine, a.ToString(), exception.ToString()));
 
-            //CheckSettingsUpgrade();
+        //CheckSettingsUpgrade();
 
-            await WindowService.OpenWindow(new VMImageChecker(), false, null, null);
-        }
-
-        //private void CheckSettingsUpgrade()
-        //{
-        //    if (Settings.Default.UpgradeRequired)
-        //    {
-        //        Settings.Default.Upgrade(); // stellt user-values wiederher
-        //        Settings.Default.UpgradeRequired = false;
-                
-        //        WindowService.CheckSettingsUpgrade();
-
-        //        Settings.Default.Save();
-        //    }
-        //}
-        
+        await WindowService.OpenWindow(new VMImageChecker(), false, null, null);
     }
+
+    //private void CheckSettingsUpgrade()
+    //{
+    //    if (Settings.Default.UpgradeRequired)
+    //    {
+    //        Settings.Default.Upgrade(); // stellt user-values wiederher
+    //        Settings.Default.UpgradeRequired = false;
+            
+    //        WindowService.CheckSettingsUpgrade();
+
+    //        Settings.Default.Save();
+    //    }
+    //}
+    
 }

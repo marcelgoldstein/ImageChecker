@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace ImageChecker.View
+namespace ImageChecker.View;
+
+/// <summary>
+/// Interaction logic for ErrorFiles.xaml
+/// </summary>
+public partial class ErrorFiles : UserControl
 {
-    /// <summary>
-    /// Interaction logic for ErrorFiles.xaml
-    /// </summary>
-    public partial class ErrorFiles : UserControl
+    public ErrorFiles()
     {
-        public ErrorFiles()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

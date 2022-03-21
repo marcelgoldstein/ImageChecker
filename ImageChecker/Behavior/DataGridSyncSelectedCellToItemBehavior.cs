@@ -2,51 +2,50 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ImageChecker.Behavior
+namespace ImageChecker.Behavior;
+
+public class DataGridSyncSelectedCellBehavior
 {
-    public class DataGridSyncSelectedCellBehavior
+    public static readonly DependencyProperty SyncSelectedCellProperty =
+        DependencyProperty.RegisterAttached("SyncSelectedCell", typeof(bool), typeof(DataGridSyncSelectedCellBehavior), new UIPropertyMetadata(false, OnSyncSelectedCellChanged));
+
+    public static bool GetSyncSelectedCell(UIElement obj)
     {
-        public static readonly DependencyProperty SyncSelectedCellProperty =
-            DependencyProperty.RegisterAttached("SyncSelectedCell", typeof(bool), typeof(DataGridSyncSelectedCellBehavior), new UIPropertyMetadata(false, OnSyncSelectedCellChanged));
+        return (bool)obj.GetValue(SyncSelectedCellProperty);
+    }
 
-        public static bool GetSyncSelectedCell(UIElement obj)
+    public static void SetSyncSelectedCell(UIElement obj, bool value)
+    {
+        obj.SetValue(SyncSelectedCellProperty, value);
+    }
+
+    private static void OnSyncSelectedCellChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (bool.Parse(e.NewValue.ToString()))
         {
-            return (bool)obj.GetValue(SyncSelectedCellProperty);
+            ((DataGrid)d).SelectionChanged += AssociatedObject_SelectionChanged;
         }
-
-        public static void SetSyncSelectedCell(UIElement obj, bool value)
+        else
         {
-            obj.SetValue(SyncSelectedCellProperty, value);
+            ((DataGrid)d).SelectionChanged -= AssociatedObject_SelectionChanged;
         }
+    }
 
-        private static void OnSyncSelectedCellChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is DataGrid)
         {
-            if (bool.Parse(e.NewValue.ToString()))
+            DataGrid grid = (sender as DataGrid);
+            if (grid.SelectedItem != null)
             {
-                ((DataGrid)d).SelectionChanged += AssociatedObject_SelectionChanged;
-            }
-            else
-            {
-                ((DataGrid)d).SelectionChanged -= AssociatedObject_SelectionChanged;
-            }
-        }
-
-        private static void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is DataGrid)
-            {
-                DataGrid grid = (sender as DataGrid);
-                if (grid.SelectedItem != null)
+                grid.Dispatcher.Invoke(() =>
                 {
-                    grid.Dispatcher.Invoke(() =>
+                    // selectedRow can be null due to virtualization
+                    if (grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) is DataGridRow selectedRow)
                     {
-                        // selectedRow can be null due to virtualization
-                        if (grid.ItemContainerGenerator.ContainerFromItem(grid.SelectedItem) is DataGridRow selectedRow)
-                        {
-                            selectedRow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-                        }
-                    });
-                }
+                        selectedRow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                    }
+                });
             }
         }
     }
