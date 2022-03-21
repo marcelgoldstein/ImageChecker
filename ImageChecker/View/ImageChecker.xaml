@@ -7,11 +7,12 @@
     xmlns:switch="clr-namespace:ImageChecker.Switch"
     xmlns:behavior="clr-namespace:ImageChecker.Behavior"
     xmlns:converter="clr-namespace:ImageChecker.Converter"
-    xmlns:viewmodel="clr-namespace:ImageChecker.ViewModel"
-    d:DataContext="{d:DesignInstance Type=viewmodel:VMImageChecker}"
     mc:Ignorable="d" 
     Height="Auto" Width="Auto" MinHeight="320" MinWidth="600" d:DesignWidth="600" d:DesignHeight="320" 
-    AllowDrop="True" behavior:DropBehavior.PreviewDropCommand="{Binding DropFolderCommand}">
+    AllowDrop="True" behavior:DropBehavior.PreviewDropCommand="{Binding DropFolderCommand}"
+    xmlns:viewmodel="clr-namespace:ImageChecker.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:VMImageChecker}"
+    >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

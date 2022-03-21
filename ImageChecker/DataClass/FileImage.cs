@@ -15,16 +15,16 @@ public class FileImage : IDisposable, INotifyPropertyChanged
     public Mat<float> SURFDescriptors { get; set; }
 
     private FileInfo _file;
-    public FileInfo File { get { return _file; } set { SetProperty(ref _file, value); } }
+    public FileInfo File { get => _file; set => SetProperty(ref _file, value); }
 
     private BitmapSource _bitmapImage;
-    public BitmapSource BitmapImage { get { return _bitmapImage; } set { SetProperty(ref _bitmapImage, value); } }
+    public BitmapSource BitmapImage { get => _bitmapImage; set => SetProperty(ref _bitmapImage, value); }
 
     private int? _pixelCount;
     public int? PixelCount
     {
-        get { return _pixelCount; }
-        set { SetProperty(ref _pixelCount, value); }
+        get => _pixelCount;
+        set => SetProperty(ref _pixelCount, value);
     }
 
 

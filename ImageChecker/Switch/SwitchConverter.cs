@@ -110,11 +110,11 @@ public class SwitchConverterCase
     /// <summary>
     /// Gets or sets the condition of the case.
     /// </summary>
-    public object When { get { return _when; } set { _when = value; } }
+    public object When { get => _when; set => _when = value; }
     /// <summary>
     /// Gets or sets the results of this case when run through a <see cref="SwitchConverter"/>
     /// </summary>
-    public object Then { get { return _then; } set { _then = value; } }
+    public object Then { get => _then; set => _then = value; }
     #endregion
     #region Construction.
     /// <summary>

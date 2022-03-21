@@ -34,7 +34,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     public TaskbarItemInfo WindowTaskbarInfo
     {
         get { if (_windowTaskbarInfo == null) _windowTaskbarInfo = new TaskbarItemInfo(); return _windowTaskbarInfo; }
-        set { _windowTaskbarInfo = value; }
+        set => _windowTaskbarInfo = value;
     }
     #endregion
 
@@ -62,10 +62,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private DirectoryInfo _selectedFolder;
     public DirectoryInfo SelectedFolder
     {
-        get
-        {
-            return _selectedFolder;
-        }
+        get => _selectedFolder;
         set
         {
             if (_selectedFolder != value)
@@ -79,10 +76,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private bool _includeSubdirectories = true;
     public bool IncludeSubdirectories
     {
-        get
-        {
-            return _includeSubdirectories;
-        }
+        get => _includeSubdirectories;
         set
         {
             if (_includeSubdirectories != value)
@@ -99,10 +93,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private double _progressMinimum = 0;
     public double ProgressMinimum
     {
-        get
-        {
-            return _progressMinimum;
-        }
+        get => _progressMinimum;
         set
         {
             if (_progressMinimum != value)
@@ -116,10 +107,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private double _progressMaximum = 100;
     public double ProgressMaximum
     {
-        get
-        {
-            return _progressMaximum;
-        }
+        get => _progressMaximum;
         set
         {
             if (_progressMaximum != value)
@@ -133,10 +121,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private double _progressValue = 0;
     public double ProgressValue
     {
-        get
-        {
-            return _progressValue;
-        }
+        get => _progressValue;
         set
         {
             if (_progressValue != value)
@@ -150,10 +135,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private string _progressText = "";
     public string ProgressText
     {
-        get
-        {
-            return _progressText;
-        }
+        get => _progressText;
         set
         {
             if (_progressText != value)
@@ -167,10 +149,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private string _progressTask = "";
     public string ProgressTask
     {
-        get
-        {
-            return _progressTask;
-        }
+        get => _progressTask;
         set
         {
             if (_progressTask != value)
@@ -184,8 +163,8 @@ public class VMImageChecker : ViewModelBase, IDisposable
     private long? _estimatedRemainingSeconds;
     public long? EstimatedRemainingSeconds
     {
-        get { return _estimatedRemainingSeconds; }
-        set { SetProperty(ref _estimatedRemainingSeconds, value); }
+        get => _estimatedRemainingSeconds;
+        set => SetProperty(ref _estimatedRemainingSeconds, value);
     }
 
     #endregion
@@ -251,21 +230,21 @@ public class VMImageChecker : ViewModelBase, IDisposable
             }
             return _preScaleOptions;
         }
-        set { SetProperty(ref _preScaleOptions, value); }
+        set => SetProperty(ref _preScaleOptions, value);
     }
 
     private Tuple<int, string> _selectedPreScaleOption;
     public Tuple<int, string> SelectedPreScaleOption
     {
-        get { return _selectedPreScaleOption; }
-        set { SetProperty(ref _selectedPreScaleOption, value); }
+        get => _selectedPreScaleOption;
+        set => SetProperty(ref _selectedPreScaleOption, value);
     }
 
     private double _threshold;
     public double Threshold
     {
-        get { return _threshold; }
-        set { SetProperty(ref _threshold, value); }
+        get => _threshold;
+        set => SetProperty(ref _threshold, value);
     }
 
     #endregion

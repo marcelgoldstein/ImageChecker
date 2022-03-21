@@ -27,10 +27,7 @@ public sealed class VMErrorFiles : ViewModelBase, IDisposable
 
             return _errorFiles;
         }
-        set
-        {
-            SetProperty(ref _errorFiles, value);
-        }
+        set => SetProperty(ref _errorFiles, value);
     }
     #endregion
 

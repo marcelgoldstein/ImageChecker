@@ -15,10 +15,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private bool _keepOriginalNames = true;
     public bool KeepOriginalNames
     {
-        get
-        {
-            return _keepOriginalNames;
-        }
+        get => _keepOriginalNames;
         set
         {
             if (_keepOriginalNames != value)
@@ -32,10 +29,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private bool _loop = true;
     public bool Loop
     {
-        get
-        {
-            return _loop;
-        }
+        get => _loop;
         set
         {
             if (_loop != value)
@@ -49,17 +43,14 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private bool _loopEndless;
     public bool LoopEndless
     {
-        get { return _loopEndless; }
-        set { SetProperty(ref _loopEndless, value); }
+        get => _loopEndless;
+        set => SetProperty(ref _loopEndless, value);
     }
 
     private bool _renameAll = false;
     public bool RenameAll
     {
-        get
-        {
-            return _renameAll;
-        }
+        get => _renameAll;
         set
         {
             if (_renameAll != value)
@@ -73,10 +64,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private double _fileNameLength = 10;
     public double FileNameLength
     {
-        get
-        {
-            return _fileNameLength;
-        }
+        get => _fileNameLength;
         set
         {
             if (_fileNameLength != value)
@@ -90,10 +78,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private bool _isRenamingFiles = false;
     public bool IsRenamingFiles
     {
-        get
-        {
-            return _isRenamingFiles;
-        }
+        get => _isRenamingFiles;
         set
         {
             if (_isRenamingFiles != value)
@@ -107,10 +92,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
     private bool _isRenamingFilesPaused = false;
     public bool IsRenamingFilesPaused
     {
-        get
-        {
-            return _isRenamingFilesPaused;
-        }
+        get => _isRenamingFilesPaused;
         set
         {
             if (_isRenamingFilesPaused != value)

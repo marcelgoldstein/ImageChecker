@@ -21,10 +21,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
     private bool _isComparingImages = false;
     public bool IsComparingImages
     {
-        get
-        {
-            return _isComparingImages;
-        }
+        get => _isComparingImages;
         set
         {
             if (_isComparingImages != value)
@@ -38,10 +35,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
     private bool _isComparingImagesPaused = false;
     public bool IsComparingImagesPaused
     {
-        get
-        {
-            return _isComparingImagesPaused;
-        }
+        get => _isComparingImagesPaused;
         set
         {
             if (_isComparingImagesPaused != value)
@@ -122,10 +116,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
     private bool _hasErrorFiles;
     public bool HasErrorFiles
     {
-        get
-        {
-            return _hasErrorFiles;
-        }
+        get => _hasErrorFiles;
         set
         {
             if (_hasErrorFiles != value)
@@ -146,79 +137,70 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
 
             return _possibleDuplicates;
         }
-        set
-        {
-            SetProperty(ref _possibleDuplicates, value);
-        }
+        set => SetProperty(ref _possibleDuplicates, value);
     }
 
     private int _selectedPossibleDuplicatesCount = -1;
     public int SelectedPossibleDuplicatesCount
     {
-        get { return _selectedPossibleDuplicatesCount; }
-        set { SetProperty(ref _selectedPossibleDuplicatesCount, value); }
+        get => _selectedPossibleDuplicatesCount;
+        set => SetProperty(ref _selectedPossibleDuplicatesCount, value);
     }
 
     private string _selectedPossibleDuplicatesCountMessage;
     public string SelectedPossibleDuplicatesCountMessage
     {
-        get { return _selectedPossibleDuplicatesCountMessage; }
-        set { SetProperty(ref _selectedPossibleDuplicatesCountMessage, value); }
+        get => _selectedPossibleDuplicatesCountMessage;
+        set => SetProperty(ref _selectedPossibleDuplicatesCountMessage, value);
     }
 
     private bool _hasPossibleDuplicates;
     public bool HasPossibleDuplicates
     {
-        get
-        {
-            return _hasPossibleDuplicates;
-        }
-        set
-        {
-            SetProperty(ref _hasPossibleDuplicates, value);
-        }
+        get => _hasPossibleDuplicates;
+        set => SetProperty(ref _hasPossibleDuplicates, value);
     }
 
     private List<DirectoryInfo> _folders;
     public List<DirectoryInfo> Folders
     {
         get { if (_folders == null) _folders = new List<DirectoryInfo>(); return _folders; }
-        set { SetProperty(ref _folders, value); }
+        set => SetProperty(ref _folders, value);
     }
 
     private bool _includeSubdirectories;
     public bool IncludeSubdirectories
     {
-        get { return _includeSubdirectories; }
-        set { SetProperty(ref _includeSubdirectories, value); }
+        get => _includeSubdirectories;
+        set => SetProperty(ref _includeSubdirectories, value);
     }
 
     private bool _preResizeImages;
     public bool PreResizeImages
     {
-        get { return _preResizeImages; }
-        set { SetProperty(ref _preResizeImages, value); }
+        get => _preResizeImages;
+        set => SetProperty(ref _preResizeImages, value);
     }
 
     private int _preResizeScale;
     public int PreResizeScale
     {
-        get { return _preResizeScale; }
-        set { SetProperty(ref _preResizeScale, value); }
+        get => _preResizeScale;
+        set => SetProperty(ref _preResizeScale, value);
     }
 
     private double _threshold;
     public double Threshold
     {
-        get { return _threshold; }
-        set { SetProperty(ref _threshold, value); }
+        get => _threshold;
+        set => SetProperty(ref _threshold, value);
     }
 
     private List<string> _files;
     public List<string> Files
     {
-        get { return _files; }
-        set { SetProperty(ref _files, value); }
+        get => _files;
+        set => SetProperty(ref _files, value);
     }
 
     #endregion

@@ -39,88 +39,67 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     private RangeObservableCollection<ImageCompareResult> _results = new();
     public RangeObservableCollection<ImageCompareResult> Results
     {
-        get
-        {
-            return _results;
-        }
-        set
-        {
-            SetProperty(ref _results, value);
-        }
+        get => _results;
+        set => SetProperty(ref _results, value);
     }
 
     private CollectionViewSource _resultsView;
 
     public CollectionViewSource ResultsView
     {
-        get { return _resultsView ??= new CollectionViewSource { Source = Results }; }
-        set { SetProperty(ref _resultsView, value); }
+        get => _resultsView ??= new CollectionViewSource { Source = Results };
+        set => SetProperty(ref _resultsView, value);
     }
 
     private IList _selectedResults;
     public IList SelectedResults
     {
-        get
-        {
-            if (_selectedResults == null)
-                _selectedResults = new List<object>();
-
-            return _selectedResults;
-        }
-        set
-        {
-            SetProperty(ref _selectedResults, value);
-        }
+        get => _selectedResults ??= new List<object>();
+        set => SetProperty(ref _selectedResults, value);
     }
 
     private ImageCompareResult _selectedResult;
     public ImageCompareResult SelectedResult
     {
-        get
-        {
-            return _selectedResult;
-        }
-        set
-        {
-            SetProperty(ref _selectedResult, value);
-        }
+        get => _selectedResult;
+        set => SetProperty(ref _selectedResult, value);
     }
 
     private bool _isExterminationModeActive;
 
     public bool IsExterminationModeActive
     {
-        get { return _isExterminationModeActive; }
-        set { SetProperty(ref _isExterminationModeActive, value); }
+        get => _isExterminationModeActive;
+        set => SetProperty(ref _isExterminationModeActive, value);
     }
 
     #region Filters
     private bool _filterActivated;
     public bool FilterActivated
     {
-        get { return _filterActivated; }
-        set { SetProperty(ref _filterActivated, value); }
+        get => _filterActivated;
+        set => SetProperty(ref _filterActivated, value);
     }
 
     private string _fileFilter;
     public string FileFilter
     {
-        get { return _fileFilter; }
-        set { SetProperty(ref _fileFilter, value); }
+        get => _fileFilter;
+        set => SetProperty(ref _fileFilter, value);
     }
 
     private List<StatusFilter> _statusFilters;
     public List<StatusFilter> StatusFilters
     {
         get { if (_statusFilters == null) { _statusFilters = new List<StatusFilter>() { new StatusFilter(1, "show all"), new StatusFilter(2, "show unsolved"), new StatusFilter(3, "show solved") }; } return _statusFilters; }
-        set { SetProperty(ref _statusFilters, value); }
+        set => SetProperty(ref _statusFilters, value);
     }
 
     private StatusFilter _selectedStatusFilter;
     public StatusFilter SelectedStatusFilter
     {
         get { if (_selectedStatusFilter == null) _selectedStatusFilter = StatusFilters.First(); return _selectedStatusFilter; }
-        set { SetProperty(ref _selectedStatusFilter, value); }
+        set => SetProperty(ref _selectedStatusFilter, value);
     }
     #endregion
 
@@ -128,29 +107,29 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     private int _processedFilesCount;
     public int ProcessedFilesCount
     {
-        get { return _processedFilesCount; }
-        set { SetProperty(ref _processedFilesCount, value); }
+        get => _processedFilesCount;
+        set => SetProperty(ref _processedFilesCount, value);
     }
 
     private int _foundDuplicatesCount;
     public int FoundDuplicatesCount
     {
-        get { return _foundDuplicatesCount; }
-        set { SetProperty(ref _foundDuplicatesCount, value); }
+        get => _foundDuplicatesCount;
+        set => SetProperty(ref _foundDuplicatesCount, value);
     }
 
     private int _unsolvedDuplicatesCount;
     public int UnsolvedDuplicatesCount
     {
-        get { return _unsolvedDuplicatesCount; }
-        set { SetProperty(ref _unsolvedDuplicatesCount, value); }
+        get => _unsolvedDuplicatesCount;
+        set => SetProperty(ref _unsolvedDuplicatesCount, value);
     }
 
     private int _solvedDuplicatesCount;
     public int SolvedDuplicatesCount
     {
-        get { return _solvedDuplicatesCount; }
-        set { SetProperty(ref _solvedDuplicatesCount, value); }
+        get => _solvedDuplicatesCount;
+        set => SetProperty(ref _solvedDuplicatesCount, value);
     }
     #endregion
     #endregion Properties
