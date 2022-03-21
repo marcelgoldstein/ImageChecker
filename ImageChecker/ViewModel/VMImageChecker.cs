@@ -19,7 +19,7 @@ using System.Windows.Shell;
 
 namespace ImageChecker.ViewModel;
 
-public class VMImageChecker : ViewModelBase, IDisposable
+public sealed class VMImageChecker : ViewModelBase, IDisposable
 {
     #region Const
     private const string PROJECT_PAGE_URL = "https://github.com/marcelgoldstein/ImageChecker";
@@ -54,7 +54,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_folders != value)
             {
                 _folders = value;
-                RaisePropertyChanged("Folders");
+                RaisePropertyChanged(nameof(Folders));
             }
         }
     }
@@ -68,7 +68,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_selectedFolder != value)
             {
                 _selectedFolder = value;
-                RaisePropertyChanged("SelectedFolder");
+                RaisePropertyChanged(nameof(SelectedFolder));
             }
         }
     }
@@ -82,7 +82,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_includeSubdirectories != value)
             {
                 _includeSubdirectories = value;
-                RaisePropertyChanged("IncludeSubdirectories");
+                RaisePropertyChanged(nameof(IncludeSubdirectories));
             }
 
         }
@@ -99,7 +99,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_progressMinimum != value)
             {
                 _progressMinimum = value;
-                RaisePropertyChanged("ProgressMinimum");
+                RaisePropertyChanged(nameof(ProgressMinimum));
             }
         }
     }
@@ -113,7 +113,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_progressMaximum != value)
             {
                 _progressMaximum = value;
-                RaisePropertyChanged("ProgressMaximum");
+                RaisePropertyChanged(nameof(ProgressMaximum));
             }
         }
     }
@@ -127,7 +127,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_progressValue != value)
             {
                 _progressValue = value;
-                RaisePropertyChanged("ProgressValue");
+                RaisePropertyChanged(nameof(ProgressValue));
             }
         }
     }
@@ -141,7 +141,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_progressText != value)
             {
                 _progressText = value;
-                RaisePropertyChanged("ProgressText");
+                RaisePropertyChanged(nameof(ProgressText));
             }
         }
     }
@@ -155,7 +155,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_progressTask != value)
             {
                 _progressTask = value;
-                RaisePropertyChanged("ProgressTask");
+                RaisePropertyChanged(nameof(ProgressTask));
             }
         }
     }
@@ -185,7 +185,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_workerRenameFiles != value)
             {
                 _workerRenameFiles = value;
-                RaisePropertyChanged("WorkerRenameFiles");
+                RaisePropertyChanged(nameof(WorkerRenameFiles));
             }
         }
     }
@@ -205,7 +205,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
             if (_workerImageComparison != value)
             {
                 _workerImageComparison = value;
-                RaisePropertyChanged("WorkerImageComparison");
+                RaisePropertyChanged(nameof(WorkerImageComparison));
             }
         }
     }
@@ -473,13 +473,13 @@ public class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_openProjectPageCommand == null)
             {
-                _openProjectPageCommand = new RelayCommand(p => OpenProjectPage(p), p => CanOpenProjectPage(p));
+                _openProjectPageCommand = new RelayCommand(p => OpenProjectPage(), p => CanOpenProjectPage());
             }
             return _openProjectPageCommand;
         }
     }
 
-    public static void OpenProjectPage(object p)
+    public static void OpenProjectPage()
     {
         ProcessStartInfo psi = new ProcessStartInfo
         {
@@ -489,7 +489,7 @@ public class VMImageChecker : ViewModelBase, IDisposable
         Process.Start(psi);
     }
 
-    private static bool CanOpenProjectPage(object p)
+    private static bool CanOpenProjectPage()
     {
         return true;
     }

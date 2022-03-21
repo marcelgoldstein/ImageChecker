@@ -27,7 +27,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             if (_isComparingImages != value)
             {
                 _isComparingImages = value;
-                RaisePropertyChanged("IsComparingImages");
+                RaisePropertyChanged(nameof(IsComparingImages));
             }
         }
     }
@@ -41,7 +41,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             if (_isComparingImagesPaused != value)
             {
                 _isComparingImagesPaused = value;
-                RaisePropertyChanged("IsComparingImagesPaused");
+                RaisePropertyChanged(nameof(IsComparingImagesPaused));
             }
         }
     }
@@ -85,7 +85,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             if (_ptsImageComparison != value)
             {
                 _ptsImageComparison = value;
-                RaisePropertyChanged("PtsImageComparison");
+                RaisePropertyChanged(nameof(PtsImageComparison));
             }
         }
     }
@@ -108,7 +108,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             if (_errorFiles != value)
             {
                 _errorFiles = value;
-                RaisePropertyChanged("ErrorFiles");
+                RaisePropertyChanged(nameof(ErrorFiles));
             }
         }
     }
@@ -122,7 +122,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             if (_hasErrorFiles != value)
             {
                 _hasErrorFiles = value;
-                RaisePropertyChanged("HasErrorFiles");
+                RaisePropertyChanged(nameof(HasErrorFiles));
             }
         }
     }

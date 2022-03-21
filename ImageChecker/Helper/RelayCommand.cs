@@ -19,7 +19,7 @@ public class RelayCommand : ICommand
 
     public RelayCommand(Action<object> execute, Predicate<object> canExecute)
     {
-        _execute = execute ?? throw new ArgumentNullException("execute");
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecute = canExecute;
     }
     #endregion // Constructors

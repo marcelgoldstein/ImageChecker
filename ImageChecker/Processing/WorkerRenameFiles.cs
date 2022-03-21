@@ -21,7 +21,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_keepOriginalNames != value)
             {
                 _keepOriginalNames = value;
-                RaisePropertyChanged("KeepOriginalNames");
+                RaisePropertyChanged(nameof(KeepOriginalNames));
             }
         }
     }
@@ -35,7 +35,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_loop != value)
             {
                 _loop = value;
-                RaisePropertyChanged("Loop");
+                RaisePropertyChanged(nameof(Loop));
             }
         }
     }
@@ -56,7 +56,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_renameAll != value)
             {
                 _renameAll = value;
-                RaisePropertyChanged("RenameAll");
+                RaisePropertyChanged(nameof(RenameAll));
             }
         }
     }
@@ -70,7 +70,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_fileNameLength != value)
             {
                 _fileNameLength = value;
-                RaisePropertyChanged("FileNameLength");
+                RaisePropertyChanged(nameof(FileNameLength));
             }
         }
     }
@@ -84,7 +84,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_isRenamingFiles != value)
             {
                 _isRenamingFiles = value;
-                RaisePropertyChanged("IsRenamingFiles");
+                RaisePropertyChanged(nameof(IsRenamingFiles));
             }
         }
     }
@@ -98,7 +98,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_isRenamingFilesPaused != value)
             {
                 _isRenamingFilesPaused = value;
-                RaisePropertyChanged("IsRenamingFilesPaused");
+                RaisePropertyChanged(nameof(IsRenamingFilesPaused));
             }
         }
     }
@@ -120,7 +120,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_ctsRenameFiles != value)
             {
                 _ctsRenameFiles = value;
-                RaisePropertyChanged("CtsRenameFiles");
+                RaisePropertyChanged(nameof(CtsRenameFiles));
             }
         }
     }
@@ -142,7 +142,7 @@ public class WorkerRenameFiles : ViewModelBase, IDisposable
             if (_ptsRenameFiles != value)
             {
                 _ptsRenameFiles = value;
-                RaisePropertyChanged("PtsRenameFiles");
+                RaisePropertyChanged(nameof(PtsRenameFiles));
             }
         }
     }

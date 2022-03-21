@@ -30,7 +30,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     public void AddRange(IEnumerable<T> list)
     {
         if (list == null)
-            throw new ArgumentNullException("list");
+            throw new ArgumentNullException(nameof(list));
 
         _suppressNotification = true;
 
@@ -45,7 +45,7 @@ public class RangeObservableCollection<T> : ObservableCollection<T>
     public void RemoveRange(IEnumerable<T> list)
     {
         if (list == null)
-            throw new ArgumentNullException("list");
+            throw new ArgumentNullException(nameof(list));
 
         _suppressNotification = true;
 

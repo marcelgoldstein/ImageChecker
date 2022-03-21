@@ -9,19 +9,13 @@ public class ViewModelBase : INotifyPropertyChanged, INotifyPropertyChanging
     #region INotifyPropertyChanged / Changing
     public void RaisePropertyChanged(string propertyName)
     {
-        if (PropertyChanged != null)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     public event PropertyChangedEventHandler PropertyChanged;
 
     public void RaisePropertyChanging(string propertyName)
     {
-        if (PropertyChanging != null)
-        {
-            PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-        }
+        PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
     }
     public event PropertyChangingEventHandler PropertyChanging;
 
