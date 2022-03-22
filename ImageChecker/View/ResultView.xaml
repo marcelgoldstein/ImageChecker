@@ -288,7 +288,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="cut file to clipboard" Height="22"
-                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA.File}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileA}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CutFileCommand}">
                                     <MenuItem.Icon>
                                         <Image Source="/ImageChecker;component/Icon/cut.png" />
@@ -345,12 +345,12 @@
                     </StackPanel>
                 </ToggleButton>
                 
-                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA.File}" Focusable="False"
+                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA}" Focusable="False"
                         Grid.Column="0" Grid.Row="5" Margin="2,2,2,2" 
                         ToolTip="delete image" Background="{DynamicResource DeleteFileBackground}" >
                     <Image Source="/ImageChecker;component/Icon/deleteFile.png" Stretch="Uniform" Margin="2"/>
                 </Button>
-                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB.File}" Focusable="False"
+                <Button Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB}" Focusable="False"
                         Grid.Column="2" Grid.Row="5" Margin="2,2,2,2"
                         ToolTip="delete image" Background="{DynamicResource DeleteFileBackground}" >
                     <Image Source="/ImageChecker;component/Icon/deleteFile.png" Stretch="Uniform" Margin="2"/>
@@ -412,7 +412,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="cut file to clipboard" Height="22"
-                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB.File}"
+                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.SelectedResult.FileB}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.DataContext.CutFileCommand}">
                                     <MenuItem.Icon>
                                         <Image Source="/ImageChecker;component/Icon/cut.png" />

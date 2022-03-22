@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shell;
 
@@ -265,10 +266,11 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         });
 
         PropertyChanged += VMImageChecker_PropertyChanged;
+        Application.Current.Exit += Current_Exit;
     }
-    #endregion
+    #endregion ctor
 
-    #region PropertyChanged
+    #region Event-Handler
     private void VMImageChecker_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
@@ -278,7 +280,12 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
                 break;
         }
     }
-    #endregion
+
+    private void Current_Exit(object sender, ExitEventArgs e)
+    {
+        Dispose();
+    }
+    #endregion Event-Handler
 
     #region Events
     #region Worker
@@ -453,7 +460,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
     #region CompareImages
 
     #endregion
-    #endregion
+    #endregion Methods
 
     #region Commands
     #region Menu
@@ -1020,9 +1027,9 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
 
         return true;
     }
-    #endregion
-    #endregion
-    #endregion
+    #endregion ShowResults
+    #endregion ImageComparison
+    #endregion Commands
 
     #region IDisposable
     public void Dispose()
@@ -1039,7 +1046,10 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
             _workerRenameFiles = null;
         }
 
+        TempFilesHelper.ClearAllTempFiles();
+
         PropertyChanged -= VMImageChecker_PropertyChanged;
+        Application.Current.Exit -= Current_Exit;
     }
-    #endregion
+    #endregion IDisposable
 }

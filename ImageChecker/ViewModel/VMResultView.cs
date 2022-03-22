@@ -1,14 +1,10 @@
-﻿using ImageChecker.DataClass;
+﻿using ImageChecker.Const;
+using ImageChecker.DataClass;
 using ImageChecker.Helper;
 using Microsoft.Win32;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -101,7 +97,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         get { if (_selectedStatusFilter == default) _selectedStatusFilter = StatusFilters.First(); return _selectedStatusFilter; }
         set => SetProperty(ref _selectedStatusFilter, value);
     }
-    #endregion
+    #endregion Filters
 
     #region Statistics
     private int _processedFilesCount;
@@ -131,10 +127,10 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         get => _solvedDuplicatesCount;
         set => SetProperty(ref _solvedDuplicatesCount, value);
     }
-    #endregion
+    #endregion Statistics
     #endregion Properties
 
-    #region cts
+    #region ctor
     public VMResultView(IEnumerable<ImageCompareResult> items, int totalFilesProcessed)
     {
         PropertyChanged += VMResultView_PropertyChanged;
@@ -168,10 +164,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             }
         });
 
+        TempFilesHelper.EnsureResultViewBackupDirectoryExists();
+
         ProcessedFilesCount = totalFilesProcessed;
         FoundDuplicatesCount = items.Count();
     }
+    #endregion ctor
 
+    #region Event-Handler
     private async void VMResultView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
@@ -198,11 +198,9 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                     }
                 }
                 break;
-            default:
-                break;
         }
     }
-    #endregion
+    #endregion Event-Handler
 
     #region Methods
     private void RefreshImageCompareResultState()
@@ -396,7 +394,25 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             icr.SmallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? "FileA" : icr.FileA.PixelCount > icr.FileB.PixelCount ? "FileB" : null;
         }
     }
-    #endregion
+
+    private static async Task<bool> TryCreateBackupAsync(FileImage fi)
+    {
+        return await Task.Run(() =>
+        {
+            if (fi.BackupFilePath != null && File.Exists(fi.BackupFilePath))
+                return true; // backup already exists
+
+            if (File.Exists(fi.File.FullName) == false)
+                return false; // backup not possible without source file
+
+            var backupFilePath = TempFilesHelper.CreateNewBackupFilePath(fi.File.FullName);
+            File.Copy(fi.File.FullName, backupFilePath, true);
+            fi.BackupFilePath = backupFilePath;
+
+            return true;
+        });
+    }
+    #endregion Methods
 
     #region Commands
     #region ApplyFiltersCommand
@@ -485,7 +501,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         return true;
     }
-    #endregion
+    #endregion ActivateFiltersCommand
 
 
     #region DeleteFile
@@ -503,22 +519,24 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         }
     }
 
-    public void DeleteFile(object file)
+    public async void DeleteFile(object fileImage)
     {
-        if (file is FileInfo fi)
+        if (fileImage is FileImage fi)
         {
-            FileOperationAPIWrapper.Send(fi.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
+            _ = await TryCreateBackupAsync(fi);
+
+            FileOperationAPIWrapper.Send(fi.File.FullName, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
         }
 
         if (IsExterminationModeActive)
             SelectNextUnsolvedResult();
     }
 
-    private static bool CanDeleteFile(object file)
+    private static bool CanDeleteFile(object fileImage)
     {
-        if (file is FileInfo fi)
+        if (fileImage is FileImage fi)
         {
-            return File.Exists(fi.FullName);
+            return File.Exists(fi.File.FullName);
         }
 
         return false;
@@ -634,7 +652,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (IsExterminationModeActive)
             {
-                DeleteFile(fileImage.File);
+                DeleteFile(fileImage);
             }
             else
             {
@@ -682,18 +700,21 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         }
     }
 
-    public static void CutFile(object file)
+    public static async void CutFile(object fileImage)
     {
-        var fi = file as FileInfo;
+        if (fileImage is FileImage fi)
+        {
+            _ = await TryCreateBackupAsync(fi);
 
-        ClipboardHelper.SetFileToClipboard(fi.FullName, ClipboardHelper.Operation.Cut);
+            ClipboardHelper.SetFileToClipboard(fi.File.FullName, ClipboardHelper.Operation.Cut);
+        }
     }
 
-    private static bool CanCutFile(object file)
+    private static bool CanCutFile(object fileImage)
     {
-        if (file is FileInfo fi)
+        if (fileImage is FileImage fi)
         {
-            return File.Exists(fi.FullName);
+            return File.Exists(fi.File.FullName);
         }
 
         return false;
@@ -715,23 +736,28 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         }
     }
 
-    public static void CutSmallerOnes(object selectedRows)
+    public static async void CutSmallerOnes(object selectedRows)
     {
         List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
-        List<FileInfo> smallerOnes = new List<FileInfo>();
+        List<FileImage> smallerOnes = new List<FileImage>();
 
         foreach (var icr in icrs)
         {
             if (icr.FileA.PixelCount != null && icr.FileB.PixelCount != null)
             {
-                var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA.File : icr.FileB.File;
+                var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA : icr.FileB;
 
-                if (File.Exists(smallerOne.FullName))
+                if (File.Exists(smallerOne.File.FullName))
                     smallerOnes.Add(smallerOne);
             }
         }
 
-        ClipboardHelper.SetFilesToClipboard(smallerOnes.Select(a => a.FullName).Distinct(), ClipboardHelper.Operation.Cut);
+        foreach (var fileImage in smallerOnes)
+        {
+            _ = await TryCreateBackupAsync(fileImage);
+        }
+
+        ClipboardHelper.SetFilesToClipboard(smallerOnes.Select(a => a.File.FullName).Distinct(), ClipboardHelper.Operation.Cut);
     }
 
     private static bool CanCutSmallerOnes(object selectedRows)
@@ -929,5 +955,5 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
         _isDisposed = true;
     }
-    #endregion
+    #endregion IDisposable
 }

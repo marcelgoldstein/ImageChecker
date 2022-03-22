@@ -225,6 +225,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
                 break;
             case nameof(PossibleDuplicates):
                 HasPossibleDuplicates = PossibleDuplicates.Any();
+                TempFilesHelper.ClearResultViewBackups();
                 break;
             case nameof(SelectedPossibleDuplicatesCount):
                 SelectedPossibleDuplicatesCountMessage = $"show [{SelectedPossibleDuplicatesCount}] results";
@@ -427,7 +428,6 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
 
             ClearFalsePositives();
         });
-
 
         HasPossibleDuplicates = PossibleDuplicates.Any();
 
