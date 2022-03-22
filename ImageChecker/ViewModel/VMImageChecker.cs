@@ -1,18 +1,15 @@
-﻿using ImageChecker.DataClass;
+﻿using ImageChecker.Const;
+using ImageChecker.DataClass;
 using ImageChecker.Factory;
 using ImageChecker.Helper;
 using ImageChecker.Processing;
 using Microsoft.Win32;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Shell;
 
@@ -20,10 +17,6 @@ namespace ImageChecker.ViewModel;
 
 public sealed class VMImageChecker : ViewModelBase, IDisposable
 {
-    #region Const
-    private const string PROJECT_PAGE_URL = "https://github.com/marcelgoldstein/ImageChecker";
-    #endregion
-
     #region Properties
     #region Window
     public static string WindowTitle { get { return $"{Assembly.GetEntryAssembly().GetName().Name} v{Assembly.GetEntryAssembly().GetName().Version}"; } }
@@ -261,7 +254,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         WorkerImageComparison.PropertyChanged += WorkerImageComparison_PropertyChanged;
         WorkerImageComparison.ImageComparisonProgress.ProgressChanged += ImageComparisonProgress_ProgressChanged;
 
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             while (true)
             {
@@ -482,7 +475,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
     {
         ProcessStartInfo psi = new ProcessStartInfo
         {
-            FileName = PROJECT_PAGE_URL,
+            FileName = CommonConst.PROJECT_PAGE_URL,
             UseShellExecute = true
         };
         Process.Start(psi);

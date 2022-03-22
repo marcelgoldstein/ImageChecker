@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ImageChecker.DataClass;
+﻿namespace ImageChecker.DataClass;
 
 public class WorkItem
 {

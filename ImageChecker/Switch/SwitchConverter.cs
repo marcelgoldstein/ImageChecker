@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Data;
+﻿using System.Windows.Data;
 using System.Windows.Markup;
 
 namespace ImageChecker.Switch;

@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Icon\app.ico</ApplicationIcon>
     <Version>1.0.8.0</Version>
+	<ImplicitUsings>enable</ImplicitUsings>
     <PackageProjectUrl>https://github.com/marcelgoldstein/ImageChecker</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marcelgoldstein/ImageChecker</RepositoryUrl>
     <AssemblyVersion>1.0.7.0</AssemblyVersion>

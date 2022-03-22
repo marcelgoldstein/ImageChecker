@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ImageChecker.Helper;
+﻿namespace ImageChecker.Helper;
 
 static class ExceptionHelper
 {

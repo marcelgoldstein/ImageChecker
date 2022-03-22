@@ -1,6 +1,4 @@
 ﻿using OpenCvSharp;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -27,6 +25,7 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
         set => SetProperty(ref _pixelCount, value);
     }
 
+    public string BackupFilePath { get; internal set; }
 
     #region ctor
     public FileImage(string filepath, Mat<float> matrix)

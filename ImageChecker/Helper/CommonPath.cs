@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 
 namespace ImageChecker.Helper;
 
@@ -10,7 +8,7 @@ public static class CommonPath
     {
         var matchingChars =
                 from len in Enumerable.Range(0, folders.Min(s => s.FullName.Length)).Reverse()
-                let possibleMatch = folders.First().FullName.Substring(0, len)
+                let possibleMatch = folders.First().FullName[..len]
                 where folders.All(f => f.FullName.StartsWith(possibleMatch))
                 select possibleMatch;
 
