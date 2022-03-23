@@ -1,19 +1,16 @@
-﻿using System;
+﻿namespace ImageChecker.Helper;
 
-namespace ImageChecker.Helper
+static class ExceptionHelper
 {
-    static class ExceptionHelper
+    public static Exception GetInnerMostException(this Exception ex)
     {
-        public static Exception GetInnerMostException(this Exception ex)
+        if (ex.InnerException == null)
         {
-            if (ex.InnerException == null)
-            {
-                return ex;
-            }
-            else
-            {
-                return ex.GetInnerMostException();
-            }
+            return ex;
+        }
+        else
+        {
+            return ex.GetInnerMostException();
         }
     }
 }

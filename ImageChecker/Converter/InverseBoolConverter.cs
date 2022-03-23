@@ -1,18 +1,16 @@
-﻿using System;
-using System.Windows.Data;
+﻿using System.Windows.Data;
 
-namespace ImageChecker.Converter
+namespace ImageChecker.Converter;
+
+class InverseBoolConverter : IValueConverter
 {
-    class InverseBoolConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return !(bool)value;
-        }
+        return !(bool)value;
+    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return !(bool)value;
-        }
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+        return !(bool)value;
     }
 }

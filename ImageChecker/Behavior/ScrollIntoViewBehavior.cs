@@ -1,48 +1,47 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace ImageChecker.Behavior
+namespace ImageChecker.Behavior;
+
+public class ScrollIntoViewBehavior
 {
-    public class ScrollIntoViewBehavior
+    public static readonly DependencyProperty ScrollIntoViewProperty =
+        DependencyProperty.RegisterAttached("ScrollIntoView", typeof(bool), typeof(ScrollIntoViewBehavior), new UIPropertyMetadata(false, OnScrollIntoViewChanged));
+
+    public static bool GetScrollIntoView(UIElement obj)
     {
-        public static readonly DependencyProperty ScrollIntoViewProperty =
-            DependencyProperty.RegisterAttached("ScrollIntoView", typeof(bool), typeof(ScrollIntoViewBehavior), new UIPropertyMetadata(false, OnScrollIntoViewChanged));
+        return (bool)obj.GetValue(ScrollIntoViewProperty);
+    }
 
-        public static bool GetScrollIntoView(UIElement obj)
+    public static void SetScrollIntoView(UIElement obj, bool value)
+    {
+        obj.SetValue(ScrollIntoViewProperty, value);
+    }
+
+    private static void OnScrollIntoViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (bool.Parse(e.NewValue.ToString()))
         {
-            return (bool)obj.GetValue(ScrollIntoViewProperty);
+            ((DataGrid)d).SelectionChanged += AssociatedObject_SelectionChanged; 
         }
-
-        public static void SetScrollIntoView(UIElement obj, bool value)
+        else
         {
-            obj.SetValue(ScrollIntoViewProperty, value);
+            ((DataGrid)d).SelectionChanged -= AssociatedObject_SelectionChanged; 
         }
+    }
 
-        private static void OnScrollIntoViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is DataGrid)
         {
-            if (bool.Parse(e.NewValue.ToString()))
+            DataGrid grid = (sender as DataGrid);
+            if (grid.SelectedItem != null)
             {
-                ((DataGrid)d).SelectionChanged += AssociatedObject_SelectionChanged; 
-            }
-            else
-            {
-                ((DataGrid)d).SelectionChanged -= AssociatedObject_SelectionChanged; 
-            }
-        }
-
-        private static void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is DataGrid)
-            {
-                DataGrid grid = (sender as DataGrid);
-                if (grid.SelectedItem != null)
+                grid.Dispatcher.Invoke(() =>
                 {
-                    grid.Dispatcher.Invoke(() =>
-                    {
-                        grid.UpdateLayout();
-                        grid.ScrollIntoView(grid.SelectedItem, null);
-                    });
-                }
+                    grid.UpdateLayout();
+                    grid.ScrollIntoView(grid.SelectedItem, null);
+                });
             }
         }
     }

@@ -2,31 +2,30 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ImageChecker.Controls
+namespace ImageChecker.Controls;
+
+public partial class MultiSelectDataGrid : DataGrid
 {
-    public partial class MultiSelectDataGrid : DataGrid
+
+    public MultiSelectDataGrid()
     {
-
-        public MultiSelectDataGrid()
-        {
-            SelectionChanged += MultiSelectDataGrid_SelectionChanged;
-        }
-
-        void MultiSelectDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SelectedItemsList = SelectedItems;
-        }
-        #region SelectedItemsList
-
-        public IList SelectedItemsList
-        {
-            get { return (IList)GetValue(SelectedItemsListProperty); }
-            set { SetValue(SelectedItemsListProperty, value); }
-        }
-
-        public static readonly DependencyProperty SelectedItemsListProperty =
-                DependencyProperty.Register("SelectedItemsList", typeof(IList), typeof(MultiSelectDataGrid), new PropertyMetadata(null));
-
-        #endregion
+        SelectionChanged += MultiSelectDataGrid_SelectionChanged;
     }
+
+    void MultiSelectDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SelectedItemsList = SelectedItems;
+    }
+    #region SelectedItemsList
+
+    public IList SelectedItemsList
+    {
+        get => (IList)GetValue(SelectedItemsListProperty);
+        set => SetValue(SelectedItemsListProperty, value);
+    }
+
+    public static readonly DependencyProperty SelectedItemsListProperty =
+            DependencyProperty.Register("SelectedItemsList", typeof(IList), typeof(MultiSelectDataGrid), new PropertyMetadata(null));
+
+    #endregion
 }
