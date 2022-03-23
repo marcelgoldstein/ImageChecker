@@ -14,7 +14,7 @@ internal static class TempFilesHelper
 
     internal static string GetTempFilesRootPath()
     {
-        return Path.Combine(Path.GetTempPath(), CommonConst.TEMP_FILES_ROOT, Process.GetCurrentProcess().Id.ToString());
+        return Path.Combine(Path.GetTempPath(), CommonConst.TEMP_FILES_ROOT, Environment.ProcessId.ToString());
     }
 
     internal static string GetResultViewBackupsPath()
@@ -22,10 +22,15 @@ internal static class TempFilesHelper
         return Path.Combine(GetTempFilesRootPath(), CommonConst.TEMP_FILES_RESULTVIEW_BACKUPS);
     }
 
-    internal static void EnsureResultViewBackupDirectoryExists()
+    internal static void EnsureTempFilesRootPathExists()
     {
         if (Directory.Exists(GetTempFilesRootPath()) == false)
             Directory.CreateDirectory(GetTempFilesRootPath());
+    }
+
+    internal static void EnsureResultViewBackupDirectoryExists()
+    {
+        EnsureTempFilesRootPathExists();
 
         if (Directory.Exists(GetResultViewBackupsPath()) == false)
             Directory.CreateDirectory(GetResultViewBackupsPath());

@@ -10,7 +10,7 @@ using System.IO;
 
 namespace ImageChecker.Processing;
 
-public class WorkerImageComparison : ViewModelBase, IDisposable
+public sealed class WorkerImageComparison : ViewModelBase, IDisposable
 {
     #region Properties
     private bool _isComparingImages = false;
@@ -339,7 +339,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             }
         });
 
-        if (_errorFiles.Count > 0)
+        if (!_errorFiles.IsEmpty)
             HasErrorFiles = true;
 
         if (CtsImageComparison.IsCancellationRequested)
@@ -393,7 +393,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
             var imageTasks = new List<Task>();
             while (nextIndex < CONCURRENCY_LEVEL && nextIndex < workItems.Count)
             {
-                imageTasks.Add(CustomFLANN.FindMatches(workItems[nextIndex].ItemToCheck, workItems[nextIndex].ItemsToCheckAgainst, PossibleDuplicates, Threshold, CtsImageComparison.Token, PtsImageComparison.Token));
+                imageTasks.Add(CustomFLANN.FindMatches(workItems[nextIndex].ItemToCheck, workItems[nextIndex].ItemsToCheckAgainst, PossibleDuplicates, Threshold, PtsImageComparison.Token, CtsImageComparison.Token));
                 nextIndex++;
 
                 await Task.Delay(100);
@@ -421,7 +421,7 @@ public class WorkerImageComparison : ViewModelBase, IDisposable
 
                 if (nextIndex < workItems.Count)
                 {
-                    imageTasks.Add(CustomFLANN.FindMatches(workItems[nextIndex].ItemToCheck, workItems[nextIndex].ItemsToCheckAgainst, PossibleDuplicates, Threshold, CtsImageComparison.Token, PtsImageComparison.Token));
+                    imageTasks.Add(CustomFLANN.FindMatches(workItems[nextIndex].ItemToCheck, workItems[nextIndex].ItemsToCheckAgainst, PossibleDuplicates, Threshold, PtsImageComparison.Token, CtsImageComparison.Token));
                     nextIndex++;
                 }
             }

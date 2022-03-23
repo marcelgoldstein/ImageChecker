@@ -93,9 +93,12 @@ public sealed class VMErrorFiles : ViewModelBase, IDisposable
     {
         if (file is FileInfo fi)
         {
-            Path.GetDirectoryName(fi.FullName);
-
-            Process.Start("explorer.exe", string.Format(@"/select,{0}", fi.FullName));
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = string.Format(@"/select,{0}", fi.FullName),
+                UseShellExecute = true
+            });
         }
     }
 

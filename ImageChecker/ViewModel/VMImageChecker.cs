@@ -265,6 +265,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
             }
         });
 
+        TempFilesHelper.EnsureTempFilesRootPathExists();
+
         PropertyChanged += VMImageChecker_PropertyChanged;
         Application.Current.Exit += Current_Exit;
     }
@@ -480,12 +482,11 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
 
     public static void OpenProjectPage()
     {
-        ProcessStartInfo psi = new ProcessStartInfo
+        Process.Start(new ProcessStartInfo
         {
             FileName = CommonConst.PROJECT_PAGE_URL,
             UseShellExecute = true
-        };
-        Process.Start(psi);
+        });
     }
 
     private static bool CanOpenProjectPage()
@@ -493,6 +494,36 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         return true;
     }
     #endregion OpenProjectPage
+
+    #region OpenApplicationTempFolder
+    private ICommand _openApplicationTempFolderCommand;
+    public ICommand OpenApplicationTempFolderCommand
+    {
+        get
+        {
+            if (_openApplicationTempFolderCommand == null)
+            {
+                _openApplicationTempFolderCommand = new RelayCommand(p => OpenApplicationTempFolder(), p => CanOpenApplicationTempFolder());
+            }
+            return _openApplicationTempFolderCommand;
+        }
+    }
+
+    public static void OpenApplicationTempFolder()
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = TempFilesHelper.GetTempFilesRootPath(),
+            UseShellExecute = true
+        });
+    }
+
+    private static bool CanOpenApplicationTempFolder()
+    {
+        return true;
+    }
+    #endregion OpenApplicationTempFolder
     #endregion Menu
 
     #region Folderselect

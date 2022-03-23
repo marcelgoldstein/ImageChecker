@@ -1,4 +1,5 @@
 ﻿using ImageChecker.Concurrent;
+using ImageChecker.Const;
 using ImageChecker.DataClass;
 using ImageChecker.Helper;
 using OpenCvSharp;
@@ -11,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace ImageChecker.Imaging;
 
-public class CustomFLANN : IDisposable
+public sealed class CustomFLANN : IDisposable
 {
     private const double SURF_HESSIAN_THRESH = 400;
     private const int KNN = 2;
@@ -31,7 +32,7 @@ public class CustomFLANN : IDisposable
         {
             try
             {
-                using var fs = File.OpenRead(@"\\?\" + fileName);
+                using var fs = File.OpenRead(CommonConst.LONG_PATH_PREFIX + fileName);
 
                 var bmi = new BitmapImage();
                 bmi.BeginInit();
@@ -77,7 +78,7 @@ public class CustomFLANN : IDisposable
     /// <param name="dbDescriptors">Query image descriptor.</param>
     /// <param name="source">Consolidated db images descriptors.</param>
     /// <param name="images">List of IndecesMapping to hold the 'similarity' value for each image in the collection.</param>
-    public static async Task FindMatches(FileImage source, List<FileImage> targets, ConcurrentBag<ImageCompareResult> possibleDuplicates, double threshold, CancellationToken cts, PauseToken pts)
+    public static async Task FindMatches(FileImage source, List<FileImage> targets, ConcurrentBag<ImageCompareResult> possibleDuplicates, double threshold, PauseToken pts, CancellationToken cts)
     {
         await Task.Run(async () =>
         {
@@ -126,7 +127,7 @@ public class CustomFLANN : IDisposable
                 if (cts.IsCancellationRequested)
                     break;
             }
-        });
+        }, cts);
     }
 
     public void Dispose()

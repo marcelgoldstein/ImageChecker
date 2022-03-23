@@ -39,6 +39,7 @@
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Project Page" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenProjectPageCommand, Mode=OneWay}"/>
+                    <MenuItem Header="Open Application Temp Folder" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenApplicationTempFolderCommand, Mode=OneWay}"/>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>

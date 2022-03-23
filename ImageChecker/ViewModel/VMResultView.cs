@@ -134,7 +134,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     public VMResultView(IEnumerable<ImageCompareResult> items, int totalFilesProcessed)
     {
         PropertyChanged += VMResultView_PropertyChanged;
-        
+
         Results.Clear();
         Results.AddRange(items.OrderByDescending(a => a.FLANN));
 
@@ -273,10 +273,8 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         foreach (var r in results)
         {
-            if (File.Exists(@"\\?\" + r.FileA.Filepath))
-                r.FileA.BitmapImage = null;
-            if (File.Exists(@"\\?\" + r.FileB.Filepath))
-                r.FileB.BitmapImage = null;
+            r.FileA.BitmapImage = null;
+            r.FileB.BitmapImage = null;
 
             r.ImageLoadStarted = false;
         }
@@ -300,13 +298,19 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                 .Select(a => a.FileA).Concat(resultsToProcess.Select(a => a.FileB))
                 .Where(a => a.BitmapImage == null);
 
-            var fig = fi.GroupBy(a => a.Filepath);
+            var fig = fi.GroupBy(a => (a.Filepath, a.BackupFilePath));
 
             foreach (var g in fig)
             {
                 ct.ThrowIfCancellationRequested();
 
-                var path = @"\\?\" + g.First().Filepath; // long file path syntax
+                var fiToUse = g.First();
+                var path = string.Empty;
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath))
+                    path = CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath;
+                else if(File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath))
+                    path = CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath;
+
                 if (File.Exists(path))
                 {
                     var bmi = new BitmapImage();
@@ -399,14 +403,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         return await Task.Run(() =>
         {
-            if (fi.BackupFilePath != null && File.Exists(fi.BackupFilePath))
+            if (fi.BackupFilePath != null && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
                 return true; // backup already exists
 
-            if (File.Exists(fi.File.FullName) == false)
+            if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.File.FullName) == false)
                 return false; // backup not possible without source file
 
-            var backupFilePath = TempFilesHelper.CreateNewBackupFilePath(fi.File.FullName);
-            File.Copy(fi.File.FullName, backupFilePath, true);
+            var backupFilePath = TempFilesHelper.CreateNewBackupFilePath(CommonConst.LONG_PATH_PREFIX + fi.File.FullName);
+            File.Copy(CommonConst.LONG_PATH_PREFIX + fi.File.FullName, backupFilePath, true);
             fi.BackupFilePath = backupFilePath;
 
             return true;
@@ -536,7 +540,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         if (fileImage is FileImage fi)
         {
-            return File.Exists(fi.File.FullName);
+            return File.Exists(CommonConst.LONG_PATH_PREFIX + fi.File.FullName);
         }
 
         return false;
@@ -614,9 +618,12 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         if (file is FileInfo fi)
         {
-            Path.GetDirectoryName(fi.FullName);
-
-            Process.Start("explorer.exe", string.Format(@"/select,{0}", fi.FullName));
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = string.Format(@"/select,{0}", fi.FullName),
+                UseShellExecute = true
+            });
         }
     }
 
@@ -624,7 +631,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         if (file is FileInfo fi)
         {
-            return File.Exists(fi.FullName);
+            return File.Exists(CommonConst.LONG_PATH_PREFIX + fi.FullName);
         }
 
         return false;
@@ -670,13 +677,13 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (IsExterminationModeActive)
             {
-                return CanDeleteFile(fileImage.File);
+                return CanDeleteFile(fileImage);
             }
             else
             {
                 if (fileImage.File is FileInfo fi)
                 {
-                    return File.Exists(fi.FullName);
+                    return File.Exists(CommonConst.LONG_PATH_PREFIX + fi.FullName);
                 }
             }
         }
@@ -714,7 +721,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     {
         if (fileImage is FileImage fi)
         {
-            return File.Exists(fi.File.FullName);
+            return File.Exists(CommonConst.LONG_PATH_PREFIX + fi.File.FullName);
         }
 
         return false;
@@ -747,7 +754,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             {
                 var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA : icr.FileB;
 
-                if (File.Exists(smallerOne.File.FullName))
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + smallerOne.File.FullName))
                     smallerOnes.Add(smallerOne);
             }
         }
@@ -797,7 +804,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             {
                 var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA.File : icr.FileB.File;
 
-                if (File.Exists(smallerOne.FullName))
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + smallerOne.FullName))
                     smallerOnes.Add(smallerOne);
             }
         }
@@ -834,16 +841,22 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
     public static void RestoreImage(object fileImage)
     {
-        if (fileImage is FileImage fi && fi.BitmapImage != null)
+        if (fileImage is FileImage fi && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
         {
-            fi.BitmapImage.SaveToFile(fi.Filepath);
+            File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, CommonConst.LONG_PATH_PREFIX + fi.Filepath, true);
         }
     }
 
     private static bool CanRestoreImage(object fileImage)
     {
-        if (fileImage is not FileImage fi || fi.BitmapImage == null || File.Exists(fi.Filepath))
+        if (fileImage is FileImage fi == false)
             return false;
+
+        if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath))
+            return false; // no need to restore
+
+        if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath) == false)
+            return false; // can not restore without backup
 
         return true;
 
@@ -867,28 +880,38 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
     public static void SaveAsImage(object fileImage)
     {
-        if (fileImage is FileImage fi && fi.BitmapImage != null)
+        if (fileImage is FileImage fi && (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath) || File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath)))
         {
             // prompt user for directory
             var dlg = new SaveFileDialog
             {
                 FileName = fi.File.Name,
                 DefaultExt = fi.File.Extension,
-                Filter = "Images |*.jpg;*.png;*.bmp;*.jfif;*jpeg;*.tif;*.tiff"
+                Filter = $"Images |*{fi.File.Extension}"
             };
 
             bool? result = dlg.ShowDialog();
 
             if (result == true)
             {
-                fi.BitmapImage.SaveToFile(dlg.FileName);
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath))
+                {
+                    File.Copy(CommonConst.LONG_PATH_PREFIX + fi.Filepath, CommonConst.LONG_PATH_PREFIX + dlg.FileName, true);
+                }
+                else if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
+                {
+                    File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, dlg.FileName, true);
+                }
             }
         }
     }
 
     private static bool CanSaveAsImage(object fileImage)
     {
-        if (fileImage is not FileImage fi || fi.BitmapImage == null)
+        if (fileImage is FileImage fi == false)
+            return false;
+
+        if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath) == false && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath) == false)
             return false;
 
         return true;
@@ -915,11 +938,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
 
         var deletedOnes = icrs.Select(a => a.FileA).Concat(icrs.Select(a => a.FileB))
-                            .DistinctBy(a => a.Filepath).Where(a => File.Exists(a.Filepath) == false);
+                            .DistinctBy(a => a.Filepath).Where(a => File.Exists(CommonConst.LONG_PATH_PREFIX + a.Filepath) == false);
 
         foreach (var restoreMe in deletedOnes)
         {
-            restoreMe.BitmapImage.SaveToFile(restoreMe.Filepath);
+            if (File.Exists(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath))
+            {
+                File.Copy(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath, CommonConst.LONG_PATH_PREFIX + restoreMe.Filepath, true);
+            }
         }
     }
 
@@ -931,7 +957,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             return false;
 
         return true;
-
     }
     #endregion RestoreSelectedImages
     #endregion Commands
