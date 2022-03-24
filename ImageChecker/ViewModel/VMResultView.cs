@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -14,7 +15,7 @@ namespace ImageChecker.ViewModel;
 public sealed class VMResultView : ViewModelBase, IDisposable
 {
     #region const
-    private readonly int _preLoadRange = 10;
+    internal const int PRE_LOAD_IMAGE_RANGE = 10;
     #endregion const
 
     #region fields
@@ -26,11 +27,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
     #region Properties
     private CancellationTokenSource _preLoadImagesCancelTokenSource;
-
-    #region Window
-    public static string WindowTitle { get { return "ResultView"; } }
-    public static string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
-    #endregion Window
 
     private RangeObservableCollection<ImageCompareResult> _results = new();
     public RangeObservableCollection<ImageCompareResult> Results
@@ -133,6 +129,9 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     #region ctor
     public VMResultView(IEnumerable<ImageCompareResult> items, int totalFilesProcessed)
     {
+        WindowTitle = "ResultView";
+        WindowIcon = @"/ImageChecker;component/Icon/app.ico";
+
         PropertyChanged += VMResultView_PropertyChanged;
 
         Results.Clear();
@@ -146,7 +145,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                 icr.FileB.File = new FileInfo(icr.FileB.Filepath);
             }
 
-            await App.Current.Dispatcher.InvokeAsync(() =>
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 SelectedResult = Results.FirstOrDefault();
             });
@@ -172,30 +171,42 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     #endregion ctor
 
     #region Event-Handler
-    private async void VMResultView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void VMResultView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
             case nameof(SelectedResult):
                 if (SelectedResult != null)
                 {
-                    try
+                    var selectedResult_Snapshot = SelectedResult;
+                    _ = Task.Run(async () =>
                     {
-                        await _cancelSlimmy.WaitAsync();
-                        _preLoadImagesCancelTokenSource?.Cancel();
-                        _preLoadImagesCancelTokenSource = new CancellationTokenSource();
-                        var ct = _preLoadImagesCancelTokenSource.Token;
-                        _cancelSlimmy.Release();
+                        CancellationToken ct; 
+                        try
+                        {
+                            await _cancelSlimmy.WaitAsync();
 
-                        await _workingSlimmy.WaitAsync();
-                        await LoadImagesAsync(SelectedResult, ct);
-                    }
-                    catch (OperationCanceledException)
-                    { }
-                    finally
-                    {
-                        _workingSlimmy.Release();
-                    }
+                            _preLoadImagesCancelTokenSource?.Cancel();
+                            _preLoadImagesCancelTokenSource = new CancellationTokenSource();
+                            ct = _preLoadImagesCancelTokenSource.Token;
+                        }
+                        finally
+                        {
+                            _cancelSlimmy.Release();
+                        }
+
+                        try
+                        {
+                            await _workingSlimmy.WaitAsync();
+                            await LoadImagesAsync(selectedResult_Snapshot, ct);
+                        }
+                        catch (OperationCanceledException)
+                        { }
+                        finally
+                        {
+                            _workingSlimmy.Release();
+                        }
+                    });
                 }
                 break;
         }
@@ -277,20 +288,16 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             r.FileB.BitmapImage = null;
 
             r.ImageLoadStarted = false;
+            r.ImageLoadCompleted = false;
         }
     }
 
     private static async Task LoadImagesAsync(List<ImageCompareResult> results, CancellationToken ct)
     {
-        var resultsToProcess = results.Where(a => a.ImageLoadStarted == false).ToList();
+        var resultsToProcess = results.Where(a => a.FileA.BitmapImage == null || a.FileB.BitmapImage == null).ToList();
 
         if (resultsToProcess.Count == 0)
             return;
-
-        foreach (var r in resultsToProcess)
-        {
-            r.ImageLoadStarted = true;
-        }
 
         try
         {
@@ -300,53 +307,51 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
             var fig = fi.GroupBy(a => (a.Filepath, a.BackupFilePath));
 
+            var tasks = new List<Task>();
+
             foreach (var g in fig)
             {
                 ct.ThrowIfCancellationRequested();
 
-                var fiToUse = g.First();
-                var path = string.Empty;
-                if (File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath))
-                    path = CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath;
-                else if(File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath))
-                    path = CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath;
-
-                if (File.Exists(path))
+                tasks.Add(Task.Run(async () =>
                 {
-                    var bmi = new BitmapImage();
-                    using (var fs = File.OpenRead(path))
-                    {
-                        bmi.BeginInit();
-                        bmi.StreamSource = fs;
-                        bmi.CacheOption = BitmapCacheOption.OnLoad;
-                        bmi.EndInit();
-                    }
+                    var fiToUse = g.First();
+                    var path = string.Empty;
+                    if (File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath))
+                        path = CommonConst.LONG_PATH_PREFIX + fiToUse.Filepath;
+                    else if (File.Exists(CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath))
+                        path = CommonConst.LONG_PATH_PREFIX + fiToUse.BackupFilePath;
 
-                    bmi.Freeze();
-                    await App.Current.Dispatcher.InvokeAsync(() =>
+                    if (File.Exists(path))
                     {
-                        foreach (var f in g)
+                        var bmi = new BitmapImage();
+                        using (var fs = File.OpenRead(path))
                         {
-                            f.BitmapImage = bmi;
+                            bmi.BeginInit();
+                            bmi.StreamSource = fs;
+                            bmi.CacheOption = BitmapCacheOption.OnLoad;
+                            bmi.EndInit();
                         }
-                    });
-                }
+
+                        bmi.Freeze();
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            foreach (var f in g)
+                            {
+                                f.BitmapImage = bmi;
+                            }
+                        });
+                    }
+                }));
             }
+
+            await Task.WhenAll(tasks);
         }
         finally
         {
             foreach (var icr in resultsToProcess)
             {
                 FindSmallerOne(icr);
-            }
-
-            // ImageLoadStarted zurücksetzen, wenn nicht das Bitmap von FileA und FileB != null ist
-            foreach (var r in resultsToProcess)
-            {
-                if (r.FileA?.BitmapImage == null || r.FileB?.BitmapImage == null)
-                {
-                    r.ImageLoadStarted = false;
-                }
             }
         }
     }
@@ -359,10 +364,10 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             var currentItemIndex = items.IndexOf(icr);
 
             #region Load Bitmaps
-            var startIndex = currentItemIndex - _preLoadRange;
+            var startIndex = currentItemIndex - PRE_LOAD_IMAGE_RANGE;
             startIndex = ((startIndex < 0) ? 0 : startIndex);
 
-            var endIndex = currentItemIndex + _preLoadRange;
+            var endIndex = currentItemIndex + PRE_LOAD_IMAGE_RANGE;
             endIndex = ((endIndex > (items.Count - 1)) ? (items.Count - 1) : endIndex);
 
             var itemsToProcess = new List<ImageCompareResult>();
@@ -516,14 +521,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_deleteFileCommand == null)
             {
-                _deleteFileCommand = new RelayCommand(p => DeleteFile(p),
+                _deleteFileCommand = new RelayCommand(async p => await DeleteFileAsync(p),
                     p => CanDeleteFile(p));
             }
             return _deleteFileCommand;
         }
     }
 
-    public async void DeleteFile(object fileImage)
+    public async Task DeleteFileAsync(object fileImage)
     {
         if (fileImage is FileImage fi)
         {
@@ -646,20 +651,20 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_imageClickCommand == null)
             {
-                _imageClickCommand = new RelayCommand(p => ImageClick(p),
+                _imageClickCommand = new RelayCommand(async p => await ImageClickAsync(p),
                     p => CanImageClick(p));
             }
             return _imageClickCommand;
         }
     }
 
-    public void ImageClick(object p)
+    public async Task ImageClickAsync(object p)
     {
         if (p is FileImage fileImage)
         {
             if (IsExterminationModeActive)
             {
-                DeleteFile(fileImage);
+                await DeleteFileAsync(fileImage);
             }
             else
             {
@@ -700,14 +705,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_cutFileCommand == null)
             {
-                _cutFileCommand = new RelayCommand(p => CutFile(p),
+                _cutFileCommand = new RelayCommand(async p => await CutFileAsync(p),
                     p => CanCutFile(p));
             }
             return _cutFileCommand;
         }
     }
 
-    public static async void CutFile(object fileImage)
+    public static async Task CutFileAsync(object fileImage)
     {
         if (fileImage is FileImage fi)
         {
@@ -736,14 +741,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_cutSmallerOnesCommand == null)
             {
-                _cutSmallerOnesCommand = new RelayCommand(p => CutSmallerOnes(p),
+                _cutSmallerOnesCommand = new RelayCommand(async p => await CutSmallerOnesAsync(p),
                     p => CanCutSmallerOnes(p));
             }
             return _cutSmallerOnesCommand;
         }
     }
 
-    public static async void CutSmallerOnes(object selectedRows)
+    public static async Task CutSmallerOnesAsync(object selectedRows)
     {
         List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
         List<FileImage> smallerOnes = new List<FileImage>();
@@ -786,30 +791,35 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_deleteSmallerOnesCommand == null)
             {
-                _deleteSmallerOnesCommand = new RelayCommand(p => DeleteSmallerOnes(p),
+                _deleteSmallerOnesCommand = new RelayCommand(async p => await DeleteSmallerOnesAsync(p),
                     p => CanDeleteSmallerOnes());
             }
             return _deleteSmallerOnesCommand;
         }
     }
 
-    public static void DeleteSmallerOnes(object selectedRows)
+    public static async Task DeleteSmallerOnesAsync(object selectedRows)
     {
         List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
-        List<FileInfo> smallerOnes = new List<FileInfo>();
+        List<FileImage> smallerOnes = new List<FileImage>();
 
         foreach (var icr in icrs)
         {
             if (icr.FileA.PixelCount != null && icr.FileB.PixelCount != null)
             {
-                var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA.File : icr.FileB.File;
+                var smallerOne = icr.FileA.PixelCount < icr.FileB.PixelCount ? icr.FileA : icr.FileB;
 
-                if (File.Exists(CommonConst.LONG_PATH_PREFIX + smallerOne.FullName))
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + smallerOne.File.FullName))
                     smallerOnes.Add(smallerOne);
             }
         }
 
-        foreach (var fi in smallerOnes.Select(a => a.FullName).Distinct())
+        foreach (var fileImage in smallerOnes)
+        {
+            _ = await TryCreateBackupAsync(fileImage);
+        }
+
+        foreach (var fi in smallerOnes.Select(a => a.File.FullName).Distinct())
         {
             FileOperationAPIWrapper.Send(fi, FileOperationAPIWrapper.FileOperationFlags.FOF_ALLOWUNDO | FileOperationAPIWrapper.FileOperationFlags.FOF_NOCONFIRMATION | FileOperationAPIWrapper.FileOperationFlags.FOF_SILENT);
         }
@@ -832,19 +842,22 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_restoreImageCommand == null)
             {
-                _restoreImageCommand = new RelayCommand(p => RestoreImage(p),
+                _restoreImageCommand = new RelayCommand(async p => await RestoreImageAsync(p),
                     p => CanRestoreImage(p));
             }
             return _restoreImageCommand;
         }
     }
 
-    public static void RestoreImage(object fileImage)
+    public static async Task RestoreImageAsync(object fileImage)
     {
-        if (fileImage is FileImage fi && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
+        await Task.Run(() =>
         {
-            File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, CommonConst.LONG_PATH_PREFIX + fi.Filepath, true);
-        }
+            if (fileImage is FileImage fi && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
+            {
+                File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, CommonConst.LONG_PATH_PREFIX + fi.Filepath, true);
+            }
+        });
     }
 
     private static bool CanRestoreImage(object fileImage)
@@ -871,14 +884,14 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_saveAsImageCommand == null)
             {
-                _saveAsImageCommand = new RelayCommand(p => SaveAsImage(p),
+                _saveAsImageCommand = new RelayCommand(async p => await SaveAsImageAsync(p),
                     p => CanSaveAsImage(p));
             }
             return _saveAsImageCommand;
         }
     }
 
-    public static void SaveAsImage(object fileImage)
+    public static async Task SaveAsImageAsync(object fileImage)
     {
         if (fileImage is FileImage fi && (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath) || File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath)))
         {
@@ -894,14 +907,17 @@ public sealed class VMResultView : ViewModelBase, IDisposable
 
             if (result == true)
             {
-                if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath))
+                await Task.Run(() =>
                 {
-                    File.Copy(CommonConst.LONG_PATH_PREFIX + fi.Filepath, CommonConst.LONG_PATH_PREFIX + dlg.FileName, true);
-                }
-                else if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
-                {
-                    File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, dlg.FileName, true);
-                }
+                    if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath))
+                    {
+                        File.Copy(CommonConst.LONG_PATH_PREFIX + fi.Filepath, CommonConst.LONG_PATH_PREFIX + dlg.FileName, true);
+                    }
+                    else if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
+                    {
+                        File.Copy(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath, dlg.FileName, true);
+                    }
+                });
             }
         }
     }
@@ -926,27 +942,30 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             if (_restoreSelectedImagesCommand == null)
             {
-                _restoreSelectedImagesCommand = new RelayCommand(p => RestoreSelectedImages(p),
+                _restoreSelectedImagesCommand = new RelayCommand(async p => await RestoreSelectedImagesAsync(p),
                     p => CanRestoreSelectedImages(p));
             }
             return _restoreSelectedImagesCommand;
         }
     }
 
-    public static void RestoreSelectedImages(object selectedRows)
+    public static async Task RestoreSelectedImagesAsync(object selectedRows)
     {
-        List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
-
-        var deletedOnes = icrs.Select(a => a.FileA).Concat(icrs.Select(a => a.FileB))
-                            .DistinctBy(a => a.Filepath).Where(a => File.Exists(CommonConst.LONG_PATH_PREFIX + a.Filepath) == false);
-
-        foreach (var restoreMe in deletedOnes)
+        await Task.Run(() =>
         {
-            if (File.Exists(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath))
+            List<ImageCompareResult> icrs = (selectedRows as IList).OfType<ImageCompareResult>().ToList();
+
+            var deletedOnes = icrs.Select(a => a.FileA).Concat(icrs.Select(a => a.FileB))
+                                .DistinctBy(a => a.Filepath).Where(a => File.Exists(CommonConst.LONG_PATH_PREFIX + a.Filepath) == false);
+
+            foreach (var restoreMe in deletedOnes)
             {
-                File.Copy(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath, CommonConst.LONG_PATH_PREFIX + restoreMe.Filepath, true);
+                if (File.Exists(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath))
+                {
+                    File.Copy(CommonConst.LONG_PATH_PREFIX + restoreMe.BackupFilePath, CommonConst.LONG_PATH_PREFIX + restoreMe.Filepath, true);
+                }
             }
-        }
+        });
     }
 
     private static bool CanRestoreSelectedImages(object selectedRows)
@@ -975,6 +994,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             result.FileA.Dispose();
             result.FileB.Dispose();
             result.ImageLoadStarted = false;
+            result.ImageLoadCompleted = false;
         }
         Results.Clear();
 

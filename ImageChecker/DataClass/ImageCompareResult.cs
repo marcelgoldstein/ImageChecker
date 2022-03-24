@@ -65,9 +65,6 @@ public class ImageCompareResult : INotifyPropertyChanged
         get { return (!FileA.FileExists() || !FileB.FileExists()); }
     }
 
-    public bool ImageLoadStarted { get; set; }
-
-
     #region INotifyPropertyChanged
     public void RaisePropertyChanged(string propertyName)
     {

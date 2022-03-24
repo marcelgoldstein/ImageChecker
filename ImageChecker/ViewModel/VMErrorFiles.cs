@@ -9,11 +9,6 @@ namespace ImageChecker.ViewModel;
 public sealed class VMErrorFiles : ViewModelBase, IDisposable
 {
     #region Properties
-    #region Window
-    public static string WindowTitle { get { return "ErrorFiles"; } }
-    public static string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
-    #endregion
-
     private ObservableCollection<FileInfo> _errorFiles;
     public ObservableCollection<FileInfo> ErrorFiles
     {
@@ -26,17 +21,20 @@ public sealed class VMErrorFiles : ViewModelBase, IDisposable
         }
         set => SetProperty(ref _errorFiles, value);
     }
-    #endregion
+    #endregion Properties
 
     #region ctr
     public VMErrorFiles(IEnumerable<string> files)
     {
+        WindowTitle = "ErrorFiles";
+        WindowIcon = @"/ImageChecker;component/Icon/app.ico";
+
         foreach (string file in files)
         {
             ErrorFiles.Add(new FileInfo(file));
         }
     }
-    #endregion
+    #endregion ctr
 
     #region Commands
     #region ListBoxItems

@@ -1,6 +1,6 @@
 ﻿using ImageChecker.Const;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace ImageChecker.Helper;
 internal static class TempFilesHelper
@@ -14,7 +14,7 @@ internal static class TempFilesHelper
 
     internal static string GetTempFilesRootPath()
     {
-        return Path.Combine(Path.GetTempPath(), CommonConst.TEMP_FILES_ROOT, Environment.ProcessId.ToString());
+        return Path.Combine(Path.GetTempPath(), Assembly.GetEntryAssembly().GetName().Name, Environment.ProcessId.ToString());
     }
 
     internal static string GetResultViewBackupsPath()
@@ -39,12 +39,12 @@ internal static class TempFilesHelper
     internal static void ClearAllTempFiles()
     {
         if (Directory.Exists(GetTempFilesRootPath()))
-            Directory.Delete(GetTempFilesRootPath(), true); 
+            Directory.Delete(GetTempFilesRootPath(), true);
     }
 
     internal static void ClearResultViewBackups()
     {
         if (Directory.Exists(GetResultViewBackupsPath()))
-            Directory.Delete(GetResultViewBackupsPath(), true); 
+            Directory.Delete(GetResultViewBackupsPath(), true);
     }
 }
