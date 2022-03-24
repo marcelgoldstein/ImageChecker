@@ -286,9 +286,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             r.FileA.BitmapImage = null;
             r.FileB.BitmapImage = null;
-
-            r.ImageLoadStarted = false;
-            r.ImageLoadCompleted = false;
         }
     }
 
@@ -342,7 +339,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                             }
                         });
                     }
-                }));
+                }, ct));
             }
 
             await Task.WhenAll(tasks);
@@ -993,8 +990,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         {
             result.FileA.Dispose();
             result.FileB.Dispose();
-            result.ImageLoadStarted = false;
-            result.ImageLoadCompleted = false;
         }
         Results.Clear();
 
