@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using ImageChecker.Const;
+using OpenCvSharp;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -39,7 +40,7 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
 
     public bool FileExists()
     {
-        return System.IO.File.Exists(Filepath);
+        return System.IO.File.Exists(CommonConst.LONG_PATH_PREFIX + Filepath);
     }
 
     private void FileImage_PropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -242,7 +242,7 @@ public sealed class WorkerImageComparison : ViewModelBase, IDisposable
         SelectedPossibleDuplicatesCount = PossibleDuplicates.Count(a => a.FLANN >= treshold);
     }
 
-    public async Task Start()
+    public async Task StartAsync()
     {
         PossibleDuplicates = new ConcurrentBag<ImageCompareResult>();
 
@@ -276,9 +276,16 @@ public sealed class WorkerImageComparison : ViewModelBase, IDisposable
 
             if (Files.Count > 0)
             {
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
-                await CompareImagesAsync(Files);
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+                try
+                {
+                    Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+
+                    await CompareImagesAsync(Files);
+                }
+                finally
+                {
+                    Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.Normal;
+                }
             }
         }
     }

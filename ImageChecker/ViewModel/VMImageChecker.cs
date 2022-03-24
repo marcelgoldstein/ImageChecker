@@ -19,18 +19,6 @@ namespace ImageChecker.ViewModel;
 public sealed class VMImageChecker : ViewModelBase, IDisposable
 {
     #region Properties
-    #region Window
-    public static string WindowTitle { get { return $"{Assembly.GetEntryAssembly().GetName().Name} v{Assembly.GetEntryAssembly().GetName().Version}"; } }
-    public static string WindowIcon { get { return @"/ImageChecker;component/Icon/app.ico"; } }
-
-    private TaskbarItemInfo _windowTaskbarInfo;
-    public TaskbarItemInfo WindowTaskbarInfo
-    {
-        get { if (_windowTaskbarInfo == null) _windowTaskbarInfo = new TaskbarItemInfo(); return _windowTaskbarInfo; }
-        set => _windowTaskbarInfo = value;
-    }
-    #endregion
-
     #region Folderselect
     private ObservableCollection<DirectoryInfo> _folders;
     public ObservableCollection<DirectoryInfo> Folders
@@ -246,6 +234,9 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
     #region ctor
     public VMImageChecker()
     {
+        WindowTitle = $"{Assembly.GetEntryAssembly().GetName().Name} v{Assembly.GetEntryAssembly().GetName().Version}";
+        WindowIcon = @"/ImageChecker;component/Icon/app.ico";
+
         SelectedPreScaleOption = PreScaleOptions[0];
         Threshold = 40;
 
@@ -329,7 +320,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
                 WorkerRenameFiles.LoopEndless = WorkerRenameFiles.Loop && WorkerRenameFiles.LoopEndless;
                 break;
             case "IsRenamingFiles":
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     CommandManager.InvalidateRequerySuggested();
                 });
@@ -374,13 +365,13 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         switch (e.PropertyName)
         {
             case "IsComparingImages":
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     CommandManager.InvalidateRequerySuggested();
                 });
                 break;
             case "HasErrorFiles":
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                Application.Current.Dispatcher.Invoke(() =>
                 {
                     CommandManager.InvalidateRequerySuggested();
                 });
@@ -548,9 +539,9 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
 
         if (inObject is not System.Windows.IDataObject ido) return;
 
-        if (ido.GetDataPresent(System.Windows.DataFormats.FileDrop))
+        if (ido.GetDataPresent(DataFormats.FileDrop))
         {
-            string[] data = (string[])ido.GetData(System.Windows.DataFormats.FileDrop);
+            string[] data = (string[])ido.GetData(DataFormats.FileDrop);
 
             for (int i = 0; i < (int)data.Length; i++)
             {
@@ -579,8 +570,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_openFolderAddDialogCommand == null)
             {
-                _openFolderAddDialogCommand = new RelayCommand(param => OpenFolderAddDialog(),
-                    param => CanOpenFolderAddDialog());
+                _openFolderAddDialogCommand = new RelayCommand(p => OpenFolderAddDialog(),
+                    p => CanOpenFolderAddDialog());
             }
             return _openFolderAddDialogCommand;
         }
@@ -626,8 +617,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_removeFolderCommand == null)
             {
-                _removeFolderCommand = new RelayCommand(param => RemoveFolder(),
-                    param => CanRemoveFolder());
+                _removeFolderCommand = new RelayCommand(p => RemoveFolder(),
+                    p => CanRemoveFolder());
             }
             return _removeFolderCommand;
         }
@@ -661,8 +652,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_clearFoldersCommand == null)
             {
-                _clearFoldersCommand = new RelayCommand(param => ClearFolders(),
-                    param => CanClearFolder());
+                _clearFoldersCommand = new RelayCommand(p => ClearFolders(),
+                    p => CanClearFolder());
             }
             return _clearFoldersCommand;
         }
@@ -690,27 +681,18 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_startRenameCommand == null)
             {
-                _startRenameCommand = new RelayCommand(param => StartRename(),
-                    param => CanStartRename());
+                _startRenameCommand = new RelayCommand(p => StartRename(),
+                    p => CanStartRename());
             }
             return _startRenameCommand;
         }
     }
 
-    private void StartRename()
+    private async void StartRename()
     {
-        var t = Task.Run(async () =>
-        {
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
-            });
-            await WorkerRenameFiles.RenameFilesAsync(Folders, IncludeSubdirectories);
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.None;
-            });
-        });
+        WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
+        await Task.Run(async () => await WorkerRenameFiles.RenameFilesAsync(Folders, IncludeSubdirectories));
+        WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.None;
     }
 
     private bool CanStartRename()
@@ -733,8 +715,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_pauseRenameCommand == null)
             {
-                _pauseRenameCommand = new RelayCommand(param => PauseUnpauseRenaming(param as bool?),
-                    param => CanPauseRenaming());
+                _pauseRenameCommand = new RelayCommand(p => PauseUnpauseRenaming(p as bool?),
+                    p => CanPauseRenaming());
             }
             return _pauseRenameCommand;
         }
@@ -745,18 +727,12 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         if (isPause ?? false)
         {
             UnpauseRenaming();
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
-            });
+            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
         }
         else
         {
             PauseRenaming();
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
-            });
+            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
         }
     }
 
@@ -789,8 +765,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_cancelRenameCommand == null)
             {
-                _cancelRenameCommand = new RelayCommand(param => CancelRenaming(),
-                    param => CanCancelRenaming());
+                _cancelRenameCommand = new RelayCommand(p => CancelRenaming(),
+                    p => CanCancelRenaming());
             }
             return _cancelRenameCommand;
         }
@@ -805,10 +781,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
             UnpauseRenaming();
         }
 
-        WindowTaskbarInfo.Dispatcher.Invoke(() =>
-        {
-            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.None;
-        });
+        WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.None;
     }
 
     private bool CanCancelRenaming()
@@ -830,8 +803,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_startImageComparisonCommand == null)
             {
-                _startImageComparisonCommand = new RelayCommand(param => StartImageComparison(),
-                    param => CanStartImageComparison());
+                _startImageComparisonCommand = new RelayCommand(p => StartImageComparison(),
+                    p => CanStartImageComparison());
             }
             return _startImageComparisonCommand;
         }
@@ -869,12 +842,9 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
 
         WorkerImageComparison.Threshold = 7D;
 
-        WindowTaskbarInfo.Dispatcher.Invoke(() =>
-        {
-            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
-        });
+        WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
 
-        await WorkerImageComparison.Start();
+        await WorkerImageComparison.StartAsync();
     }
 
     private bool CanStartImageComparison()
@@ -897,7 +867,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_pauseImageComparisonCommand == null)
             {
-                _pauseImageComparisonCommand = new RelayCommand(param => PauseUnpauseImageComparison(param as bool?),
+                _pauseImageComparisonCommand = new RelayCommand(p => PauseUnpauseImageComparison(p as bool?),
                     param => CanPauseImageComparison());
             }
             return _pauseImageComparisonCommand;
@@ -909,18 +879,12 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         if (isPause ?? false)
         {
             UnpauseImageComparison();
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
-            });
+            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Normal;
         }
         else
         {
             PauseImageComparison();
-            WindowTaskbarInfo.Dispatcher.Invoke(() =>
-            {
-                WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
-            });
+            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Paused;
         }
     }
 
@@ -953,8 +917,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_cancelImageComparisonCommand == null)
             {
-                _cancelImageComparisonCommand = new RelayCommand(param => CancelImageComparison(),
-                    param => CanCancelImageComparison());
+                _cancelImageComparisonCommand = new RelayCommand(p => CancelImageComparison(),
+                    p => CanCancelImageComparison());
             }
             return _cancelImageComparisonCommand;
         }
@@ -969,10 +933,7 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
             UnpauseImageComparison();
         }
 
-        WindowTaskbarInfo.Dispatcher.Invoke(() =>
-        {
-            WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Error;
-        });
+        WindowTaskbarInfo.ProgressState = TaskbarItemProgressState.Error;
     }
 
     private bool CanCancelImageComparison()
@@ -1026,8 +987,8 @@ public sealed class VMImageChecker : ViewModelBase, IDisposable
         {
             if (_showResultsCommand == null)
             {
-                _showResultsCommand = new RelayCommand(async param => await ShowResults(),
-                    param => CanShowResults());
+                _showResultsCommand = new RelayCommand(async p => await ShowResults(),
+                    p => CanShowResults());
             }
             return _showResultsCommand;
         }
