@@ -3,6 +3,7 @@ using ImageChecker.DataClass;
 using ImageChecker.Helper;
 using Microsoft.Win32;
 using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -130,8 +131,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         WindowTitle = "ResultView";
         WindowIcon = @"/ImageChecker;component/Icon/app.ico";
 
-        PropertyChanged += VMResultView_PropertyChanged;
-
         Results.Clear();
         Results.AddRange(items.OrderByDescending(a => a.FLANN));
 
@@ -168,9 +167,11 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     }
     #endregion ctor
 
-    #region Event-Handler
-    private void VMResultView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    #region Methods
+    protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        base.OnPropertyChanged(sender, e);
+
         switch (e.PropertyName)
         {
             case nameof(SelectedResult):
@@ -179,7 +180,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                     var selectedResult_Snapshot = SelectedResult;
                     _ = Task.Run(async () =>
                     {
-                        CancellationToken ct; 
+                        CancellationToken ct;
                         try
                         {
                             await _cancelSlimmy.WaitAsync();
@@ -209,9 +210,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
                 break;
         }
     }
-    #endregion Event-Handler
 
-    #region Methods
     private void RefreshImageCompareResultState()
     {
         foreach (var r in Results)
@@ -981,8 +980,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         _preLoadImagesCancelTokenSource?.Cancel();
 
         SelectedResult = null;
-
-        PropertyChanged -= VMResultView_PropertyChanged;
 
         foreach (var result in Results)
         {
