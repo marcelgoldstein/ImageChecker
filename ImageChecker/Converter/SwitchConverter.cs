@@ -1,7 +1,9 @@
-﻿using System.Windows.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace ImageChecker.Switch;
+namespace ImageChecker.Converter;
 
 /// <summary>
 /// A converter that accepts <see cref="SwitchConverterCase"/>s and converts them to the 
@@ -10,11 +12,14 @@ namespace ImageChecker.Switch;
 [ContentProperty("Cases")]
 public class SwitchConverter : IValueConverter
 {
+    // Converter instances.
+    private List<SwitchConverterCase> _cases;
+
     #region Public Properties.
     /// <summary>
     /// Gets or sets an array of <see cref="SwitchConverterCase"/>s that this converter can use to produde values from.
     /// </summary>
-    public List<SwitchConverterCase> Cases { get; set; }
+    public List<SwitchConverterCase> Cases { get { return _cases; } set { _cases = value; } }
     public object Default { get; set; }
     #endregion
     #region Construction.
@@ -24,7 +29,7 @@ public class SwitchConverter : IValueConverter
     public SwitchConverter()
     {
         // Create the cases array.
-        Cases = new List<SwitchConverterCase>();
+        _cases = new List<SwitchConverterCase>();
     }
     #endregion
 
@@ -40,40 +45,66 @@ public class SwitchConverter : IValueConverter
     /// </returns>
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        bool isSame;
+        try
+        {
+            bool isSame;
 
-        if (Cases != null && Cases.Count > 0)
-            for (int i = 0; i < Cases.Count; i++)
-            {
-                SwitchConverterCase targetCase = Cases[i];
-
-
-                if (value == null && targetCase.When == null)
-                    return targetCase.Then;
-
-                if (value != null && targetCase.When != null)
+            if (_cases != null && _cases.Count > 0)
+                for (var i = 0; i < _cases.Count; i++)
                 {
-                    if ((value.GetType().IsValueType || value.GetType() == typeof(string)) && (targetCase.When.GetType().IsValueType || targetCase.When.GetType() == typeof(string)))
-                    {
-                        isSame = (value.ToString() == targetCase.When.ToString());
+                    var targetCase = _cases[i];
 
-                        // wenn beide numeric sind, dann a - b == 0?
-                        if (!isSame && Decimal.TryParse(value.ToString(), out var a) && Decimal.TryParse(targetCase.When.ToString(), out var b))
+
+                    if (value == null && targetCase.When == null)
+                        return targetCase.Then;
+
+                    if (value != null && targetCase.When != null)
+                    {
+                        if (bool.TryParse(value.ToString(), out var bValue) && bool.TryParse(targetCase.When.ToString(), out var bWhenValue))
                         {
-                            isSame = (a - b == 0);
+                            isSame = bValue == bWhenValue;
+                        }
+                        else if ((value.GetType().IsValueType || value.GetType() == typeof(string)) && (targetCase.When.GetType().IsValueType || targetCase.When.GetType() == typeof(string)))
+                        {
+                            isSame = value.ToString() == targetCase.When.ToString();
+
+                            // wenn beide numeric sind, dann a - b == 0?
+                            if (!isSame && decimal.TryParse(value.ToString(), out var a) && decimal.TryParse(targetCase.When.ToString(), out var b))
+                            {
+                                isSame = a - b == 0;
+                            }
+                            else if (!isSame && targetCase.When.GetType().IsEnum)
+                            {
+                                try
+                                {
+                                    isSame = System.Convert.ToInt64(value) == System.Convert.ToInt64(targetCase.When);
+                                }
+                                catch (Exception)
+                                {
+                                    isSame = false;
+                                }
+                            }
+                        }
+                        else if (value is Type == false && targetCase.When is Type t)
+                        { // der value ist kein type, aber der case.when ist ein type. dann prüfen, ob der type des values zum type im case.when passt.
+                            isSame = t.IsAssignableFrom(value?.GetType());
+                        }
+                        else
+                        {
+                            isSame = value.Equals(targetCase.When);
+                        }
+
+                        if (isSame)
+                        {
+                            return targetCase.Then;
                         }
                     }
-                    else
-                    {
-                        isSame = value.Equals(targetCase.When);
-                    }
-
-                    if (isSame)
-                    {
-                        return targetCase.Then;
-                    }
                 }
-            }
+        }
+        catch (Exception)
+        {
+            return Default;
+        }
 
         return Default;
     }
@@ -101,18 +132,18 @@ public class SwitchConverter : IValueConverter
 public class SwitchConverterCase
 {
     // case instances.
-    object _when;
-    object _then;
+    private object _when;
+    private object _then;
 
     #region Public Properties.
     /// <summary>
     /// Gets or sets the condition of the case.
     /// </summary>
-    public object When { get => _when; set => _when = value; }
+    public object When { get { return _when; } set { _when = value; } }
     /// <summary>
     /// Gets or sets the results of this case when run through a <see cref="SwitchConverter"/>
     /// </summary>
-    public object Then { get => _then; set => _then = value; }
+    public object Then { get { return _then; } set { _then = value; } }
     #endregion
     #region Construction.
     /// <summary>
@@ -135,10 +166,10 @@ public class SwitchConverterCase
     #endregion
 
     /// <summary>
-    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// Returns a <see cref="string"/> that represents this instance.
     /// </summary>
     /// <returns>
-    /// A <see cref="System.String"/> that represents this instance.
+    /// A <see cref="string"/> that represents this instance.
     /// </returns>
     public override string ToString()
     {

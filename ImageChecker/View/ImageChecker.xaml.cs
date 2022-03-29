@@ -13,7 +13,7 @@ public partial class ImageCheckerView : UserControl
     #endregion Contructor
 
     #region EventHandler
-    private void btnMenu_Click(object sender, System.Windows.RoutedEventArgs e)
+    private void BtnMenu_Click(object sender, System.Windows.RoutedEventArgs e)
     {
         if (sender is Button btn)
         {
