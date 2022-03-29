@@ -652,20 +652,17 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         }
     }
 
-    public async Task ImageClickAsync(object p)
+    public async Task ImageClickAsync(object fileImage)
     {
-        if (p is FileImage fileImage)
+        if (fileImage is FileImage fi)
         {
             if (IsExterminationModeActive)
             {
-                await DeleteFileAsync(fileImage);
+                await DeleteFileAsync(fi);
             }
             else
             {
-                if (fileImage.File is FileInfo fi)
-                {
-                    Process.Start(new ProcessStartInfo(fi.FullName) { UseShellExecute = true });
-                }
+                await OpenFileAsync(fi);
             }
         }
     }
@@ -680,16 +677,55 @@ public sealed class VMResultView : ViewModelBase, IDisposable
             }
             else
             {
-                if (fileImage.File is FileInfo fi)
-                {
-                    return File.Exists(CommonConst.LONG_PATH_PREFIX + fi.FullName);
-                }
+                return CanOpenFile(fileImage);
             }
         }
 
         return false;
     }
     #endregion ImageClick
+
+    #region OpenFile
+    private ICommand _openFileCommand;
+    public ICommand OpenFileCommand
+    {
+        get
+        {
+            if (_openFileCommand == null)
+            {
+                _openFileCommand = new RelayCommand(async p => await OpenFileAsync(p),
+                    p => CanOpenFile(p));
+            }
+            return _openFileCommand;
+        }
+    }
+
+    public async Task OpenFileAsync(object fileImage)
+    {
+        if (fileImage is FileImage fi)
+        {
+            if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath))
+            {
+                Process.Start(new ProcessStartInfo(CommonConst.LONG_PATH_PREFIX + fi.Filepath) { UseShellExecute = true });
+            }
+            else if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath))
+            {
+                Process.Start(new ProcessStartInfo(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath) { UseShellExecute = true });
+            }
+        }
+    }
+
+    private bool CanOpenFile(object fileImage)
+    {
+        if (fileImage is FileImage fi == false)
+            return false;
+
+        if (File.Exists(CommonConst.LONG_PATH_PREFIX + fi.Filepath) == false && File.Exists(CommonConst.LONG_PATH_PREFIX + fi.BackupFilePath) == false)
+            return false;
+
+        return true;
+    }
+    #endregion OpenFile
 
     #region CutFile
     private ICommand _cutFileCommand;

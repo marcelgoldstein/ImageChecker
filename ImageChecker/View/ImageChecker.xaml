@@ -4,16 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:switch="clr-namespace:ImageChecker.Switch"
     xmlns:behavior="clr-namespace:ImageChecker.Behavior"
     xmlns:converter="clr-namespace:ImageChecker.Converter"
     mc:Ignorable="d" 
-    Height="Auto" Width="Auto" MinHeight="320" MinWidth="600" d:DesignWidth="600" d:DesignHeight="320" 
-    AllowDrop="True" behavior:DropBehavior.PreviewDropCommand="{Binding DropFolderCommand}"
+    Height="Auto" Width="Auto" MinHeight="320" MinWidth="600" 
+    d:DesignWidth="600" d:DesignHeight="320" 
+    AllowDrop="True" 
+    behavior:DropBehavior.PreviewDropCommand="{Binding DropFolderCommand}"
     xmlns:viewmodel="clr-namespace:ImageChecker.ViewModel"
     d:DataContext="{d:DesignInstance Type=viewmodel:VMImageChecker}"
     >
     <Grid>
+        <Grid.Resources>
+            <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converter:BooleanAllFalseToTrueConverter x:Key="BooleanAllFalseToTrueConverter" />
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" MinHeight="57" />
@@ -28,25 +34,43 @@
             VerticalAlignment="Top"
             HorizontalAlignment="Right"
             Margin="0,1,7,-14"
-            Click="btnMenu_Click"
+            Click="BtnMenu_Click"
             Width="32"
             Height="18"
             Padding="0"
             >
             <Button.Content>
-                <Image Source="/Icon/burgermenu.png" Stretch="Fill"/>
+                <Image 
+                    Source="/Icon/burgermenu.png" 
+                    Stretch="Fill"
+                    />
             </Button.Content>
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Project Page" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenProjectPageCommand, Mode=OneWay}"/>
-                    <MenuItem Header="Open Application Temp Folder" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenApplicationTempFolderCommand, Mode=OneWay}"/>
+                    <MenuItem 
+                        Header="Project Page" 
+                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenProjectPageCommand, Mode=OneWay}" 
+                        ToolTip="Opens the project page on github.com in your browser."
+                        />
+                    <MenuItem 
+                        Header="Open Application Temp Folder" 
+                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.OpenApplicationTempFolderCommand, Mode=OneWay}" 
+                        ToolTip="Opens the temp-files directory for the current process. Temporary files are stored here and get cleaned up when the application is closed."
+                        />
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
         
-        <GroupBox Margin="5,5,5,0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <GroupBox 
+            Margin="5,5,5,0" 
+            Grid.Row="1" 
+            VerticalAlignment="Stretch" 
+            HorizontalAlignment="Stretch"
+            >
             <GroupBox.Header>
-                <Grid>
+                <Grid 
+                    ToolTip="Directories added here are getting processed. You may drag and drop elements here."
+                    >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="20"/>
@@ -55,20 +79,60 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Folders" Grid.Column="0"/>
-                    <Button ToolTip="Add Directory" Command="{Binding OpenFolderAddDialogCommand}" Grid.Column="2" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
-                        <Image Source="/ImageChecker;component/Icon/add_folder.png" Stretch="Uniform" />
+                    <TextBlock 
+                        Text="Folders" 
+                        Grid.Column="0"
+                        />
+                    <Button 
+                        ToolTip="add directory" 
+                        Command="{Binding OpenFolderAddDialogCommand}" 
+                        Grid.Column="2" 
+                        Margin="2,0" 
+                        Height="19" 
+                        BorderThickness="0" 
+                        Background="Transparent"
+                        >
+                        <Image 
+                            Source="/ImageChecker;component/Icon/add_folder.png" 
+                            Stretch="Uniform" 
+                            />
                     </Button>
-                    <Button ToolTip="Remove Directory" Grid.Column="3" Command="{Binding RemoveFolderCommand}" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
-                        <Image Source="/ImageChecker;component/Icon/remove_folder.png" Stretch="Uniform" />
+                    <Button 
+                        ToolTip="remove selected directory" 
+                        Grid.Column="3" 
+                        Command="{Binding RemoveFolderCommand}" 
+                        Margin="2,0" 
+                        Height="19" 
+                        BorderThickness="0" 
+                        Background="Transparent"
+                        >
+                        <Image 
+                            Source="/ImageChecker;component/Icon/remove_folder.png" 
+                            Stretch="Uniform" 
+                            />
                     </Button>
-                    <Button ToolTip="Clear Directories" Grid.Column="4" Command="{Binding ClearFoldersCommand}" Margin="2,0" Height="19" BorderThickness="0" Background="Transparent">
-                        <Image Source="/ImageChecker;component/Icon/clear_folders.png" Stretch="Uniform" />
+                    <Button 
+                        ToolTip="clear directories" 
+                        Grid.Column="4" 
+                        Command="{Binding ClearFoldersCommand}" 
+                        Margin="2,0" 
+                        Height="19" 
+                        BorderThickness="0" 
+                        Background="Transparent"
+                        >
+                        <Image 
+                            Source="/ImageChecker;component/Icon/clear_folders.png" 
+                            Stretch="Uniform" 
+                            />
                     </Button>
-                    <CheckBox Content="include subdirectories" Grid.Column="5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding IncludeSubdirectories, Mode=TwoWay}">
-                        <CheckBox.Resources>
-                            <converter:BooleanAllFalseToTrueConverter x:Key="BooleanAllFalseToTrueConverter" />
-                        </CheckBox.Resources>
+                    <CheckBox 
+                        Content="include subdirectories" 
+                        Grid.Column="5" 
+                        Margin="5,0" 
+                        VerticalAlignment="Center" 
+                        IsChecked="{Binding IncludeSubdirectories, Mode=TwoWay}" 
+                        ToolTip="When set all subdirectories of the added directories are included as well - otherwise only the top-level directory`s files."
+                        >
                         <CheckBox.IsEnabled>
                             <MultiBinding Converter="{StaticResource BooleanAllFalseToTrueConverter}">
                                 <Binding Path="WorkerRenameFiles.IsRenamingFiles" />
@@ -78,37 +142,115 @@
                     </CheckBox>
                 </Grid>
             </GroupBox.Header>
-            <ListBox x:Name="lbDirectories" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0"
+            <ListBox 
+                x:Name="lbDirectories" 
+                ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                BorderThickness="0"
 				ItemsSource="{Binding Folders}" DisplayMemberPath="FullName"
-                SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"/>
+                SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"
+                />
         </GroupBox>
         
-        <GroupBox Header="Rename Files" Margin="5,0" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <GroupBox 
+            Margin="5,0" 
+            Grid.Row="2" 
+            VerticalAlignment="Stretch" 
+            HorizontalAlignment="Stretch"
+            >
+            <GroupBox.Header>
+                <TextBlock 
+                    Text="Rename Files" 
+                    ToolTip="With this function you can quickly rename files. Filenames are appended/overriden by a random text." 
+                    />
+            </GroupBox.Header>
             <Grid>
+                <Grid.Resources>
+                    <converter:SwitchConverter x:Key="TrueToStrikethroughConverter" Default="{x:Null}">
+                        <converter:SwitchConverterCase When="true" Then="Strikethrough" />
+                    </converter:SwitchConverter>
+                </Grid.Resources>
+                
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="155"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Content="filenames shorter than" Margin="5" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock 
+                    Margin="5" 
+                    Grid.Row="0" 
+                    Grid.Column="0" 
+                    VerticalAlignment="Center" 
+                    ToolTip="With this option you can filter which files are getting processed." 
+                    TextDecorations="{Binding ElementName=chIgnoreFilenameLength, Path=IsChecked, Converter={StaticResource TrueToStrikethroughConverter}}"
+                    >
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}filenames shorter than: {0}">
+                            <Binding ElementName="sliderFilenameLength" Path="Value" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
                 <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Slider Grid.Column="0" VerticalAlignment="Center" Minimum="1" Maximum="100" AutoToolTipPlacement="TopLeft" Value="{Binding WorkerRenameFiles.FileNameLength, Mode=TwoWay}" Margin="5" SmallChange="1" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch"/>
-                    <CheckBox Grid.Column="1" Content="all" ToolTip="ignores the given length" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.RenameAll, Mode=TwoWay}" HorizontalAlignment="Right"/>
+                    
+                    <Slider 
+                        x:Name="sliderFilenameLength"
+                        Grid.Column="0" 
+                        VerticalAlignment="Center" 
+                        Minimum="1" 
+                        Maximum="100" 
+                        AutoToolTipPlacement="TopLeft" 
+                        Value="{Binding WorkerRenameFiles.FileNameLength, Mode=TwoWay}" 
+                        Margin="5" 
+                        SmallChange="1" 
+                        IsMoveToPointEnabled="True"
+                        IsSnapToTickEnabled="True" 
+                        HorizontalAlignment="Stretch" 
+                        ToolTip="The minimum filename length for a file to be included."
+                        IsEnabled="{Binding ElementName=chIgnoreFilenameLength, Path=IsChecked, Converter={StaticResource InverseBoolConverter}}"
+                        />
+                    
+                    <CheckBox 
+                        x:Name="chIgnoreFilenameLength" 
+                        Grid.Column="1" 
+                        Content="all" 
+                        ToolTip="Ignores the filename length and includes all files." 
+                        Margin="5" 
+                        VerticalAlignment="Center" 
+                        IsChecked="{Binding WorkerRenameFiles.RenameAll, Mode=TwoWay}" 
+                        HorizontalAlignment="Right"
+                        />
                 </Grid>
                 
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                    <CheckBox Content="keep original names" ToolTip="appends or replaces filenames" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.KeepOriginalNames, Mode=TwoWay}"/>
-                    <CheckBox Content="loop" ToolTip="starts over and over again" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.Loop, Mode=TwoWay}"/>
-                    <CheckBox Content="endless" ToolTip="starts over and over again (even if no files processing)" Margin="5" VerticalAlignment="Center" IsChecked="{Binding WorkerRenameFiles.LoopEndless, Mode=TwoWay}"/>
+                    <CheckBox 
+                        Content="append filenames" 
+                        ToolTip="When set filenames are appended - otherwise the complete filenames gets overriden." 
+                        Margin="5" 
+                        VerticalAlignment="Center" 
+                        IsChecked="{Binding WorkerRenameFiles.KeepOriginalNames, Mode=TwoWay}"
+                        />
+                    <CheckBox 
+                        Content="loop" 
+                        ToolTip="When set executes as long as files are getting included by the given filter criteria." 
+                        Margin="5" 
+                        VerticalAlignment="Center" 
+                        IsChecked="{Binding WorkerRenameFiles.Loop, Mode=TwoWay}"
+                        />
+                    <CheckBox 
+                        Content="endless" 
+                        ToolTip="When set the loop option keeps executing even when no files are beeing processed. This can be handy when files are getting added/changed." 
+                        Margin="5" 
+                        VerticalAlignment="Center" 
+                        IsChecked="{Binding WorkerRenameFiles.LoopEndless, Mode=TwoWay}"
+                        />
                     
                 </StackPanel>
 
@@ -119,15 +261,34 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.Resources>
-                        <switch:SwitchConverter x:Key="PauseRenameText" >
-                            <switch:SwitchConverterCase When="False" Then="Pause" />
-                            <switch:SwitchConverterCase When="True" Then="Unpause" />
-                        </switch:SwitchConverter>
+                        <converter:SwitchConverter x:Key="PauseRenameText" >
+                            <converter:SwitchConverterCase When="False" Then="Pause" />
+                            <converter:SwitchConverterCase When="True" Then="Unpause" />
+                        </converter:SwitchConverter>
                     </Grid.Resources>
-                    <Button Content="Start" Margin="5" Command="{Binding StartRenameCommand}"/>
-                    <Button Content="{Binding WorkerRenameFiles.IsRenamingFilesPaused, Converter={StaticResource PauseRenameText}, FallbackValue='Pause'}" Margin="5" Grid.Column="1" 
-                            Command="{Binding PauseRenameCommand}" CommandParameter="{Binding WorkerRenameFiles.IsRenamingFilesPaused}"/>
-                    <Button Content="Cancel" Margin="5" Grid.Column="2" Command="{Binding CancelRenameCommand}"/>
+                    <Button 
+                        Content="Start" 
+                        Margin="5" 
+                        Command="{Binding StartRenameCommand}" 
+                        ToolTip="Starts the file rename execution with the given parameters. Parameters can be changed while executing to take effect in the next run." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
+                    <Button 
+                        Content="{Binding WorkerRenameFiles.IsRenamingFilesPaused, Converter={StaticResource PauseRenameText}, FallbackValue='Pause'}" 
+                        Margin="5" 
+                        Grid.Column="1" 
+                        Command="{Binding PauseRenameCommand}" CommandParameter="{Binding WorkerRenameFiles.IsRenamingFilesPaused}" 
+                        ToolTip="Pauses/Unpauses the current execution run." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
+                    <Button 
+                        Content="Cancel" 
+                        Margin="5" 
+                        Grid.Column="2" 
+                        Command="{Binding CancelRenameCommand}"
+                        ToolTip="Cancels the current execution run." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
 
                 </Grid>
             </Grid>
@@ -145,6 +306,57 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
+                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock 
+                        Text="prescale option" 
+                        VerticalAlignment="Center" 
+                        Grid.Column="0" 
+                        Margin="5,0,5,5" 
+                        ToolTip="Defines the size of the fingerprints that are taken from the original images. The higher the better is the result but also the processing takes more time."
+                        />
+                    <ComboBox 
+                        Grid.Column="1" 
+                        Margin="5" 
+                        Width="100" 
+                        IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"
+                        ItemsSource="{Binding PreScaleOptions}" DisplayMemberPath="Item2" SelectedValuePath="Item1"
+                        SelectedItem="{Binding SelectedPreScaleOption, Mode=TwoWay}"
+                        ToolTip="Defines the size of the fingerprints that are taken from the original images. The higher the better is the result but also the processing takes more time."
+                        />
+
+                    <TextBlock
+                        Text="{Binding ElementName=sliderSimilarityThreshold, Path=Value, StringFormat='{}similarity threshold: {0}'}" 
+                        Grid.Column="3" 
+                        VerticalAlignment="Center" 
+                        Margin="5,0,5,5"
+                        Width="130"
+                        ToolTip="Specifies how similar images need to be to get included in the presented result view. This option can be changed anytime (before/while/after processing) to take effect."
+                        />
+                    <Slider
+                        x:Name="sliderSimilarityThreshold"
+                        Grid.Column="4" 
+                        VerticalAlignment="Center" 
+                        Minimum="0" 
+                        Maximum="100" 
+                        AutoToolTipPlacement="TopLeft" 
+                        Value="{Binding Threshold, Mode=TwoWay}" 
+                        Margin="5" 
+                        SmallChange="1" 
+                        IsMoveToPointEnabled="True" 
+                        IsSnapToTickEnabled="True" 
+                        HorizontalAlignment="Stretch"
+                        ToolTip="Specifies how similar images need to be to get included in the presented result view. This option can be changed anytime (before/while/after processing) to take effect."
+                        />
+                </Grid>
+
                 <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -156,70 +368,85 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.Resources>
-                        <switch:SwitchConverter x:Key="PauseImageComparisonText" >
-                            <switch:SwitchConverterCase When="False" Then="Pause" />
-                            <switch:SwitchConverterCase When="True" Then="Unpause" />
-                        </switch:SwitchConverter>
+                        <converter:SwitchConverter x:Key="PauseImageComparisonText" >
+                            <converter:SwitchConverterCase When="False" Then="Pause" />
+                            <converter:SwitchConverterCase When="True" Then="Unpause" />
+                        </converter:SwitchConverter>
                         
-                        <switch:SwitchConverter x:Key="ShowErrorFilesVisibility">
-                            <switch:SwitchConverterCase When="False" Then="Collapsed" />
-                            <switch:SwitchConverterCase When="True" Then="Visible" />
-                        </switch:SwitchConverter>
+                        <converter:SwitchConverter x:Key="ShowErrorFilesVisibility">
+                            <converter:SwitchConverterCase When="False" Then="Collapsed" />
+                            <converter:SwitchConverterCase When="True" Then="Visible" />
+                        </converter:SwitchConverter>
                     </Grid.Resources>
                     
-                    <Button Content="Start" Margin="5" Grid.Column="0" Command="{Binding StartImageComparisonCommand}"/>
-                    <Button Content="{Binding WorkerImageComparison.IsComparingImagesPaused, Converter={StaticResource PauseImageComparisonText}, FallbackValue='Pause'}" Margin="5" Grid.Column="1" 
-                            Command="{Binding PauseImageComparisonCommand}" CommandParameter="{Binding WorkerImageComparison.IsComparingImagesPaused}"/>
-                    <Button Content="Cancel" Margin="5" Grid.Column="2" Command="{Binding CancelImageComparisonCommand}"/>
+                    <Button 
+                        Content="Start" 
+                        Margin="5" 
+                        Grid.Column="0" 
+                        Command="{Binding StartImageComparisonCommand}"
+                        ToolTip="Starts the image comparison execution with the given parameters." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
+                    <Button 
+                        Content="{Binding WorkerImageComparison.IsComparingImagesPaused, Converter={StaticResource PauseImageComparisonText}, FallbackValue='Pause'}" 
+                        Margin="5" 
+                        Grid.Column="1" 
+                        Command="{Binding PauseImageComparisonCommand}" 
+                        CommandParameter="{Binding WorkerImageComparison.IsComparingImagesPaused}"
+                        ToolTip="Pauses/Unpauses the current execution run." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
+                    <Button 
+                        Content="Cancel" 
+                        Margin="5" 
+                        Grid.Column="2" 
+                        Command="{Binding CancelImageComparisonCommand}"
+                        ToolTip="Cancels the current execution run." 
+                        ToolTipService.ShowOnDisabled="True"
+                        />
                     
-                    <Button Grid.Column="3" Margin="5" ToolTip="handle files that could not be processed as image" 
-                            Command="{Binding ShowErrorFilesCommand}"
-                            Visibility="{Binding WorkerImageComparison.HasErrorFiles, Converter={StaticResource ShowErrorFilesVisibility}}">
-                        <Image Source="/ImageChecker;component/Icon/error.png" Height="16" Width="16"/>
-                    </Button>
-
-                    
-                    
-                </Grid>
-
-                <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
-                    <Grid.Resources>
-                        <converter:InverseBoolConverter x:Key="InverseBoolConverter" />
-                    </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="prescale option" VerticalAlignment="Center" Grid.Column="0" Margin="5,0,5,5"/>
-                    <ComboBox Grid.Column="1" Margin="5" Width="100" IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"
-                              ItemsSource="{Binding PreScaleOptions}" DisplayMemberPath="Item2" SelectedValuePath="Item1"
-                              SelectedItem="{Binding SelectedPreScaleOption, Mode=TwoWay}"/>
-                    
-                    <TextBlock Text="similarity threshold" Grid.Column="3" VerticalAlignment="Center" Margin="5,0,5,5"/>
-                    <Slider Grid.Column="4" VerticalAlignment="Center" Minimum="0" Maximum="100" AutoToolTipPlacement="TopLeft" Value="{Binding Threshold, Mode=TwoWay}" 
-                            Margin="5" SmallChange="1" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" HorizontalAlignment="Stretch"
+                    <Button 
+                        Grid.Column="3"
+                        Margin="5" 
+                        ToolTip="Handle files that could not be processed as an image." 
+                        Command="{Binding ShowErrorFilesCommand}"
+                        Visibility="{Binding WorkerImageComparison.HasErrorFiles, Converter={StaticResource ShowErrorFilesVisibility}}"
+                        >
+                        <Image 
+                            Source="/ImageChecker;component/Icon/error.png" 
+                            Height="16" 
+                            Width="16"
                             />
-                            <!--IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"-->
-                    <!--<CheckBox Content="pre-resize images" Margin="5,0,5,5" IsChecked="{Binding PreResizeImages, Mode=TwoWay}" IsEnabled="{Binding WorkerImageComparison.IsComparingImages, Converter={StaticResource InverseBoolConverter}}"/>-->    
-                </Grid>
-                
+                    </Button>
+                </Grid>                
 
-                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                    <Button Margin="5,0,5,5" ToolTip="opens a new window presenting the results" 
-                            Command="{Binding ShowResultsCommand}" Content="{Binding WorkerImageComparison.SelectedPossibleDuplicatesCountMessage, FallbackValue='show results'}" />
+                <Grid 
+                    Grid.Row="2" 
+                    Grid.Column="0" 
+                    Grid.ColumnSpan="2"
+                    >
+                    <Button 
+                        Margin="5,0,5,5" 
+                        ToolTip="Opens a new window presenting the results." 
+                        Command="{Binding ShowResultsCommand}" 
+                        Content="{Binding WorkerImageComparison.SelectedPossibleDuplicatesCountMessage, FallbackValue='show results'}" 
+                        />
                 </Grid>
-                
-
             </Grid>
         </GroupBox>
 
-        <ProgressBar Grid.Row="4" Margin="5" Height="20" 
-                     Minimum="{Binding ProgressMinimum}" Maximum="{Binding ProgressMaximum}" Value="{Binding ProgressValue}"/>
-        <TextBlock Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Text="{Binding ProgressText, FallbackValue='0 / X'}"/>
+        <ProgressBar 
+            Grid.Row="4" 
+            Margin="5" 
+            Height="20" 
+            Minimum="{Binding ProgressMinimum}" 
+            Maximum="{Binding ProgressMaximum}" Value="{Binding ProgressValue}"
+            />
+        <TextBlock 
+            Grid.Row="4" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Center"
+            Text="{Binding ProgressText, FallbackValue='0 / X'}"
+            />
     </Grid>
 </UserControl>

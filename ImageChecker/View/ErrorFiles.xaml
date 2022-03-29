@@ -23,11 +23,10 @@
             </AlternationConverter>
 
             <Style x:Key="alternatingWithBinding" TargetType="{x:Type ListBoxItem}">
-                <Setter Property="Background" 
-              Value="{Binding RelativeSource={RelativeSource Self},
-                     Path=(ItemsControl.AlternationIndex),
-                     Converter={StaticResource BackgroundConverter}}"/>
-
+                <Setter 
+                    Property="Background" 
+                    Value="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex), Converter={StaticResource BackgroundConverter}}"
+                    />
             </Style>
 
         </Grid.Resources>
@@ -54,8 +53,15 @@
             </Button>
         </Grid>
 
-        <ListBox Margin="5,0,5,5" Grid.Row="1" ItemsSource="{Binding ErrorFiles}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" 
-                 AlternationCount="2" ItemContainerStyle="{StaticResource alternatingWithBinding}">
+        <ListBox 
+            Margin="5,0,5,5" 
+            Grid.Row="1" 
+            ItemsSource="{Binding ErrorFiles}" 
+            HorizontalContentAlignment="Stretch" 
+            VerticalContentAlignment="Center" 
+            AlternationCount="2" 
+            ItemContainerStyle="{StaticResource alternatingWithBinding}"
+            >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid >
@@ -66,11 +72,18 @@
                         </Grid.ColumnDefinitions>
 
                         <Grid.InputBindings>
-                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.OpenImageCommand}" CommandParameter="{Binding }" />
+                            <MouseBinding 
+                                MouseAction="LeftDoubleClick" 
+                                Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.OpenImageCommand}" 
+                                CommandParameter="{Binding }" 
+                                />
                         </Grid.InputBindings>
-                        
 
-                        <TextBlock Text="{Binding Name}" Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock 
+                            Text="{Binding Name}" 
+                            Grid.Column="0" 
+                            VerticalAlignment="Center"
+                            >
                             <TextBlock.ToolTip>
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="{Binding FullName}" />
@@ -78,15 +91,28 @@
                                 </StackPanel>
                             </TextBlock.ToolTip>
                         </TextBlock>
-                        
-                        
 
-                        <Button ToolTip="open containing folder" Grid.Column="1" Width="22" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,5,0" 
-                                Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding }" >
+                        <Button 
+                            ToolTip="open containing folder" 
+                            Grid.Column="1" 
+                            Width="22" 
+                            Grid.Row="0" 
+                            Grid.RowSpan="2" 
+                            Margin="0,0,5,0" 
+                            Command="{Binding DataContext.OpenFolderCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                            CommandParameter="{Binding }"
+                            >
                             <Image Source="/ImageChecker;component/Icon/openFolder.png" />
                         </Button>
-                        <Button ToolTip="delete file" Grid.Column="2" Width="22" Grid.Row="0" Grid.RowSpan="2" 
-                                Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" CommandParameter="{Binding }" >
+                        <Button 
+                            ToolTip="delete file" 
+                            Grid.Column="2" 
+                            Width="22" 
+                            Grid.Row="0" 
+                            Grid.RowSpan="2" 
+                            Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                            CommandParameter="{Binding }"
+                            >
                             <Image Source="/ImageChecker;component/Icon/trash.png" />
                         </Button>
                     </Grid>

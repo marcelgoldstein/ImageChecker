@@ -6,7 +6,6 @@ namespace ImageChecker.Controls;
 
 public partial class MultiSelectDataGrid : DataGrid
 {
-
     public MultiSelectDataGrid()
     {
         SelectionChanged += MultiSelectDataGrid_SelectionChanged;
@@ -16,7 +15,6 @@ public partial class MultiSelectDataGrid : DataGrid
     {
         SelectedItemsList = SelectedItems;
     }
-    #region SelectedItemsList
 
     public IList SelectedItemsList
     {
@@ -24,8 +22,5 @@ public partial class MultiSelectDataGrid : DataGrid
         set => SetValue(SelectedItemsListProperty, value);
     }
 
-    public static readonly DependencyProperty SelectedItemsListProperty =
-            DependencyProperty.Register("SelectedItemsList", typeof(IList), typeof(MultiSelectDataGrid), new PropertyMetadata(null));
-
-    #endregion
+    public static readonly DependencyProperty SelectedItemsListProperty = DependencyProperty.Register(nameof(SelectedItemsList), typeof(IList), typeof(MultiSelectDataGrid), new PropertyMetadata(null));
 }
