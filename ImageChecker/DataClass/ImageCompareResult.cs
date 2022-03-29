@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using ImageChecker.Helper;
 
 namespace ImageChecker.DataClass;
 
-public class ImageCompareResult : INotifyPropertyChanged
+public class ImageCompareResult : ABindableBase
 {
     public enum StateEnum
     {
@@ -64,22 +63,4 @@ public class ImageCompareResult : INotifyPropertyChanged
     {
         get { return (!FileA.FileExists() || !FileB.FileExists()); }
     }
-
-    #region INotifyPropertyChanged
-    public void RaisePropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
-    {
-        if (!EqualityComparer<T>.Default.Equals(field, value))
-        {
-            field = value;
-            RaisePropertyChanged(propertyName);
-        }
-    }
-    #endregion
 }

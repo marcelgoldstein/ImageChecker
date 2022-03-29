@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace ImageChecker.Helper;
@@ -57,24 +59,22 @@ public abstract class ABindableBase : INotifyPropertyChanged, INotifyPropertyCha
         }
     }
 
-    protected void RaisePropertyChanged<T>(System.Linq.Expressions.Expression<System.Func<T>> propertyExpression)
+    protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
     {
-        RaisePropertyChanged(ExtractPropertyName<T>(propertyExpression));
+        RaisePropertyChanged(ExtractPropertyName(propertyExpression));
     }
 
-    public static string ExtractPropertyName<T>(System.Linq.Expressions.Expression<System.Func<T>> propertyExpression)
+    public static string ExtractPropertyName<T>(Expression<Func<T>> propertyExpression)
     {
         if (propertyExpression == null)
         {
             throw new ArgumentNullException(nameof(propertyExpression));
         }
-        System.Linq.Expressions.MemberExpression body = propertyExpression.Body as System.Linq.Expressions.MemberExpression;
-        if (body == null)
+        if (propertyExpression.Body is not MemberExpression body)
         {
             throw new ArgumentException("NotMemberAccessExpression_Exception", nameof(propertyExpression));
         }
-        System.Reflection.PropertyInfo member = body.Member as System.Reflection.PropertyInfo;
-        if (member == null)
+        if (body.Member is not PropertyInfo member)
         {
             throw new ArgumentException("ExpressionNotProperty_Exception", nameof(propertyExpression));
         }
@@ -87,7 +87,7 @@ public abstract class ABindableBase : INotifyPropertyChanged, INotifyPropertyCha
     #endregion INotifyPropertyChanged / Changing
 
     #region IDisposable Support
-    private bool _isDisposed;
+    protected bool _isDisposed;
 
     protected virtual void Dispose(bool disposing)
     {

@@ -19,8 +19,6 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     #endregion const
 
     #region fields
-    private bool _isDisposed = false;
-
     private static readonly SemaphoreSlim _cancelSlimmy = new(1);
     private static readonly SemaphoreSlim _workingSlimmy = new(1);
     #endregion fields
@@ -978,7 +976,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
     #endregion Commands
 
     #region IDisposable
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
         _preLoadImagesCancelTokenSource?.Cancel();
 
@@ -993,7 +991,7 @@ public sealed class VMResultView : ViewModelBase, IDisposable
         }
         Results.Clear();
 
-        _isDisposed = true;
+        base.Dispose(disposing);
     }
     #endregion IDisposable
 }
