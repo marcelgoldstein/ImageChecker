@@ -1,13 +1,13 @@
 ﻿using ImageChecker.Const;
+using ImageChecker.Helper;
 using OpenCvSharp;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 
 namespace ImageChecker.DataClass;
 
-public sealed class FileImage : IDisposable, INotifyPropertyChanged
+public sealed class FileImage : ABindableBase
 {
     public string Filepath { get; set; }
 
@@ -33,8 +33,6 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
     {
         Filepath = filepath;
         SURFDescriptors = matrix;
-
-        PropertyChanged += FileImage_PropertyChanged;
     }
     #endregion ctor
 
@@ -43,8 +41,10 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
         return System.IO.File.Exists(CommonConst.LONG_PATH_PREFIX + Filepath);
     }
 
-    private void FileImage_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        base.OnPropertyChanged(sender, e);
+
         switch (e.PropertyName)
         {
             case nameof(BitmapImage):
@@ -53,13 +53,10 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
                     PixelCount = BitmapImage.PixelWidth * BitmapImage.PixelHeight;
                 }
                 break;
-            default:
-                break;
         }
     }
 
-    #region IDisposable
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
         if (SURFDescriptors != null)
         {
@@ -69,24 +66,7 @@ public sealed class FileImage : IDisposable, INotifyPropertyChanged
 
         BitmapImage = null;
         File = null;
-    }
-    #endregion
 
-    #region INotifyPropertyChanged
-    public void RaisePropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        base.Dispose(disposing);
     }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    private void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
-    {
-        if (!EqualityComparer<T>.Default.Equals(field, value))
-        {
-            field = value;
-            RaisePropertyChanged(propertyName);
-        }
-    }
-    #endregion
 }
