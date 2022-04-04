@@ -20,8 +20,8 @@
     </UserControl.Resources>
     
     <UserControl.InputBindings>
-        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA.File}" Key="Left" />
-        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB.File}" Key="Right" />
+        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileA}" Key="Left" />
+        <KeyBinding Command="{Binding DeleteFileCommand}" CommandParameter="{Binding SelectedResult.FileB}" Key="Right" />
         <KeyBinding Command="{Binding MoveSelectionUpCommand}" Key="Up" Modifiers="Ctrl"/>
         <KeyBinding Command="{Binding MoveSelectionDownCommand}" Key="Down" Modifiers="Ctrl" />
     </UserControl.InputBindings>
