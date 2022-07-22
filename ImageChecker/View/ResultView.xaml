@@ -209,6 +209,7 @@
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Setter Property="ToolTip" Value="{Binding FileA.File.FullName, Mode=OneWay}" />
+                            <Setter Property="ToolTipService.ShowsToolTipOnKeyboardFocus" Value="False" />
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
@@ -222,6 +223,7 @@
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Setter Property="ToolTip" Value="{Binding FileB.File.FullName, Mode=OneWay}" />
+                            <Setter Property="ToolTipService.ShowsToolTipOnKeyboardFocus" Value="False" />
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
